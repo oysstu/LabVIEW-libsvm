@@ -12,6 +12,10 @@
 #include "LVException.h"
 #include "LVTypeDecl.h"
 
+#ifndef LIBLINEAR_VERSION
+#define LIBLINEAR_VERSION 196
+#endif
+
 #pragma region TypeDefs
 #include <lv_prolog.h>
 
@@ -26,7 +30,6 @@ struct LVlinear_node
 
 struct LVlinear_problem
 {
-	int32_t l;
 	LVArray_Hdl<float64> y;
 	LVArray_Hdl<LVArray_Hdl<LVlinear_node>> x; // Sparse array
 	double bias;
@@ -76,6 +79,8 @@ static std::atomic<LVUserEventRef *> loggingUsrEv(nullptr);
 // DLL Export, C API and call convention
 #define LVLIBLINEAR_API extern "C" __declspec(dllexport)
 #define CALLCONV __cdecl
+
+LVLIBLINEAR_API int32_t	CALLCONV GetLibLinearVersion() { return LIBLINEAR_VERSION; }
 
 LVLIBLINEAR_API void	CALLCONV LVlinear_train(lvError *lvErr, const LVlinear_problem *prob_in, const LVlinear_parameter *param_in, LVlinear_model * model_out);
 

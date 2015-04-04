@@ -14,13 +14,18 @@
 
 void LVsvm_train(lvError *lvErr, const LVsvm_problem *prob_in, const LVsvm_parameter *param_in, LVsvm_model * model_out){
 	try{
+		// Input verification: Problem dimensions
+		if ((*(prob_in->x))->dimSize != (*(prob_in->y))->dimSize)
+			throw LVException(__FILE__, __LINE__, "The problem must have an equal number of labels and feature vectors (x and y).");
+
 		// Convert LVsvm_problem to svm_problem
 		std::unique_ptr<svm_problem> prob(new svm_problem);
-		prob->l = prob_in->l;
+		uint32_t nr_nodes = (*(prob_in->y))->dimSize;
+		prob->l = nr_nodes;
 		prob->y = (*(prob_in->y))->elt;
 
 		// Create and array of pointers (sparse datastructure)
-		std::unique_ptr<svm_node*[]> x(new svm_node*[prob_in->l]);
+		std::unique_ptr<svm_node*[]> x(new svm_node*[nr_nodes]);
 		prob->x = x.get();
 
 		auto x_in = prob_in->x;
@@ -91,13 +96,18 @@ void LVsvm_train(lvError *lvErr, const LVsvm_problem *prob_in, const LVsvm_param
 
 void LVsvm_cross_validation(lvError *lvErr, const LVsvm_problem *prob_in, const LVsvm_parameter *param_in, int32_t nr_fold, LVArray_Hdl<double> target_out){
 	try{
+		// Input verification: Problem dimensions
+		if ((*(prob_in->x))->dimSize != (*(prob_in->y))->dimSize)
+			throw LVException(__FILE__, __LINE__, "The problem must have an equal number of labels and feature vectors (x and y).");
+
 		// Convert LVsvm_problem to svm_problem
 		std::unique_ptr<svm_problem> prob(new svm_problem);
-		prob->l = prob_in->l;
+		int32_t nr_nodes = (*(prob_in->y))->dimSize;
+		prob->l = nr_nodes; // The number of nodes
 		prob->y = (*(prob_in->y))->elt;
 
 		// Create and array of pointers (sparse datastructure)
-		std::unique_ptr<svm_node*[]> x(new svm_node*[prob_in->l]);
+		std::unique_ptr<svm_node*[]> x(new svm_node*[nr_nodes]);
 		prob->x = x.get();
 
 		auto x_in = prob_in->x;
@@ -117,11 +127,11 @@ void LVsvm_cross_validation(lvError *lvErr, const LVsvm_problem *prob_in, const 
 			throw LVException(__FILE__, __LINE__, "Parameter check failed with the following error: " + std::string(param_check));
 
 		// Allocate room in target_out
-		LVResizeNumericArrayHandle(target_out, prob_in->l);
+		LVResizeNumericArrayHandle(target_out, nr_nodes);
 
 		svm_cross_validation(prob.get(), param.get(), nr_fold, (*target_out)->elt);
 
-		(*target_out)->dimSize = prob_in->l;
+		(*target_out)->dimSize = nr_nodes;
 	}
 	catch (LVException &ex) {
 		ex.returnError(lvErr);

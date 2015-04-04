@@ -28,9 +28,6 @@
 		<Item Name="SubVIs" Type="Folder" URL="../SubVIs">
 			<Property Name="NI.DISK" Type="Bool">true</Property>
 		</Item>
-		<Item Name="Test" Type="Folder" URL="../Test">
-			<Property Name="NI.DISK" Type="Bool">true</Property>
-		</Item>
 		<Item Name="LibSVM Cross-Validate.vi" Type="VI" URL="../LibSVM Cross-Validate.vi"/>
 		<Item Name="LibSVM Predict.vi" Type="VI" URL="../LibSVM Predict.vi"/>
 		<Item Name="LibSVM Train.vi" Type="VI" URL="../LibSVM Train.vi"/>
@@ -59,8 +56,6 @@
 				<Item Name="NI_PackedLibraryUtility.lvlib" Type="Library" URL="/&lt;vilib&gt;/Utility/LVLibp/NI_PackedLibraryUtility.lvlib"/>
 				<Item Name="Space Constant.vi" Type="VI" URL="/&lt;vilib&gt;/dlg_ctls.llb/Space Constant.vi"/>
 			</Item>
-			<Item Name="liblinear.dll" Type="Document" URL="../bin/x64/liblinear.dll"/>
-			<Item Name="libsvm.dll" Type="Document" URL="../bin/x64/libsvm.dll"/>
 			<Item Name="LVLibSVM.dll" Type="Document" URL="../bin/x64/LVLibSVM.dll"/>
 		</Item>
 		<Item Name="Build Specifications" Type="Build"/>

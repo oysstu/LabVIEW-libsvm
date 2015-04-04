@@ -34,7 +34,6 @@ struct LVsvm_node
 // This can be ignored, as there is no byte packing (tested later)
 struct LVsvm_problem
 {
-	int32_t l;
 	LVArray_Hdl<float64> y;
 	LVArray_Hdl<LVArray_Hdl<LVsvm_node>> x; // Sparse array
 };
