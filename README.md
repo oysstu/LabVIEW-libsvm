@@ -1,12 +1,13 @@
-# LabVIEW-libsvm
+# Description
 A LabVIEW wrapper for libsvm (320). An interface to liblinear (1.19) is also included.
 The wrapper can currently be considered experimental, as it has not been extensively tested.
 
 Although there exists an old wrapper for libsvm, it uses the (now) unsupported CIN interface and passes data through text files.
 This implementation uses Call Library Function Nodes, and passes data directly.
 
-The easiest way to install the library is through the VIPM package.
-This installs both the VIs and binary components to vi.lib.
+# Installation
+The easiest way to install the library is through the pre-built VIPM package.
+This installs both the VIs and binary components to vi.lib. 
 Currently the only supported system is windows, but unix support will be added shortly.
 
 The supplied binaries are compiled using Visual Studio 2013.
