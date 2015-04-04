@@ -13,25 +13,6 @@
 #include "LVException.h"
 #include "LVTypeDecl.h"
 
-/*
-TODOs:
-
-1.	Redirect stdout and stderr, used in libsvm, to a file (using freopen("file.txt","w",stdout/stderr)) or user event.
-
-2.	Make the print function user events per-instance
-
-3.	Implement file saving/loading using the libsvm interface. Good idea for portability
-
-4.	Implement user-friendly precomputed kernels (in LabVIEW).
-
-5.	Implement normalization/scaling function in LabVIEW
-
-6.	Create alternative implementation that allows storing an svm_model to be used in svm_predict.
-Thus avoiding the repeated data conversion and verification.
-This can either be implemented by returning some kind of data handle/pointer back to LabVIEW, which can be used in the next call to predict.
-
-*/
-
 // Redefinitions of libsvm type declarations using LabVIEW handles
 #pragma region TypeDefs
 
