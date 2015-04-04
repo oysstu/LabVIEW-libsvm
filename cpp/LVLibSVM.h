@@ -1,7 +1,7 @@
 /// <summary>
 ///
 ///	Main entry point for LabVIEW for libsvm
-/// 
+///
 /// </summary>
 
 #pragma once
@@ -27,8 +27,8 @@ TODOs:
 5.	Implement normalization/scaling function in LabVIEW
 
 6.	Create alternative implementation that allows storing an svm_model to be used in svm_predict.
-	Thus avoiding the repeated data conversion and verification.
-	This can either be implemented by returning some kind of data handle/pointer back to LabVIEW, which can be used in the next call to predict.
+Thus avoiding the repeated data conversion and verification.
+This can either be implemented by returning some kind of data handle/pointer back to LabVIEW, which can be used in the next call to predict.
 
 */
 
@@ -104,7 +104,6 @@ static_assert (sizeof(LVArray_Hdl<LVsvm_node>) == sizeof(_LVsvm_one_element_clus
 
 #pragma endregion
 
-
 //-- Static variables
 
 // User event reference used to return libsvm console logging to LabVIEW
@@ -146,11 +145,10 @@ LVLIBSVM_API void CALLCONV LVsvm_delete_logging_userevent(lvError *lvErr, LVUser
 
 //-- Helper functions
 
-// Assigns the cluster from LabVIEW to a svm_parameter struct 
+// Assigns the cluster from LabVIEW to a svm_parameter struct
 void LVConvertParameter(const LVsvm_parameter *param_in, svm_parameter *param_out);
 
 void LVConvertParameter(const svm_parameter *param_in, LVsvm_parameter *param_out);
-
 
 // Assigns the LVsvm_model cluster from LabVIEW to svm_model
 void LVConvertModel(const LVsvm_model *model_in, svm_model *model_out, std::unique_ptr<svm_node*[]> &SV, std::unique_ptr<double*[]> &sv_coef);

@@ -1,8 +1,7 @@
-
-// Array handles and string handles are structs of a size parameter (one for each dimension) and the data itself.
-// This file provides templates that avoids having to define all these structs manually.
-
-// TODO: Implement resizing mechanics directly here, to take advantage of the type to specify sizes
+/// <summary>
+/// Array handles and string handles are structs of a size parameter (one for each dimension) and the data itself.
+/// This file provides templates that avoids having to define all these structs manually.'
+/// </summary>
 
 #pragma once
 

@@ -260,7 +260,6 @@ void LVlinear_delete_logging_userevent(lvError *lvErr, LVUserEventRef *loggingUs
 	loggingUsrEv = nullptr;
 }
 
-
 //-- Helper functions
 
 void LVConvertParameter(const LVlinear_parameter *param_in, parameter *param_out){
@@ -271,7 +270,7 @@ void LVConvertParameter(const LVlinear_parameter *param_in, parameter *param_out
 
 	if ((*(param_in->weight))->dimSize != (*(param_in->weight_label))->dimSize)
 		throw LVException(__FILE__, __LINE__, "Parameter error: Number of elements in weight_label and weight does not match.");
-	
+
 	param_out->nr_weight = (*(param_in->weight))->dimSize;
 
 	// Weight label
@@ -292,8 +291,8 @@ void LVConvertModel(const LVlinear_model *model_in, model *model_out){
 	LVConvertParameter(&model_in->param, &model_out->param);
 
 	// Copy assignments
-	model_out->nr_class		= model_in->nr_class;
-	model_out->nr_feature	= model_in->nr_feature;
+	model_out->nr_class = model_in->nr_class;
+	model_out->nr_feature = model_in->nr_feature;
 	model_out->bias = model_in->bias;
 
 	// w
@@ -324,7 +323,7 @@ void LVConvertModel(const model *model_in, LVlinear_model *model_out){
 	(*model_out->label)->dimSize = model_in->nr_class;
 
 	// w
-	int32_t nr_w = nr_feature * nr_class;	
+	int32_t nr_w = nr_feature * nr_class;
 	// If bias is present, the feature vector increases by one
 	if (model_in->bias >= 0)
 		nr_w += nr_class;

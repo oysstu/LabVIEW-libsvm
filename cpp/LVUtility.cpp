@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-
 #include "LVUtility.h"
 #include "LVTypeDecl.h"
 #include "LVException.h"
@@ -21,12 +20,11 @@ void LVWriteStringHandle(LStrHandle &strHandle, const char* c_str, size_t length
 		(*strHandle)->cnt = static_cast<int32>(length);
 		MoveBlock(c_str, (*strHandle)->str, length);
 	}
-	else 
+	else
 	{
 		throw LVException(__FILE__, __LINE__, "The string handle passed to LVWriteStringHandle is not valid (out of zone/deleted?)");
 	}
 }
-
 
 void LVWriteStringHandle(LStrHandle &strHandle, const char* c_str) {
 	// Don't want to pass a nullpointer to strlen, behaviour is undefined.
@@ -39,7 +37,6 @@ void LVWriteStringHandle(LStrHandle &strHandle, const char* c_str) {
 	}
 	LVWriteStringHandle(strHandle, c_str, length);
 }
-
 
 void LVWriteStringHandle(LStrHandle &strHandle, std::string str) {
 	LVWriteStringHandle(strHandle, str.c_str(), str.length());

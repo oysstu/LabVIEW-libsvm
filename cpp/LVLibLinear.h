@@ -1,7 +1,7 @@
 /// <summary>
 ///
 ///	Main entry point for LabVIEW for liblinear
-/// 
+///
 /// </summary>
 
 #pragma once
@@ -66,7 +66,6 @@ struct _LVlinear_one_element_cluster {
 };
 static_assert (sizeof(LVArray_Hdl<LVlinear_node>) == sizeof(_LVlinear_one_element_cluster), "Byte packing in one-element cluster present");
 
-
 //-- Static variables
 static std::atomic<LVUserEventRef *> loggingUsrEv(nullptr);
 
@@ -88,7 +87,6 @@ LVLIBLINEAR_API double	CALLCONV LVlinear_predict_values(lvError *lvErr, const LV
 
 LVLIBLINEAR_API double	CALLCONV LVlinear_predict_probability(lvError *lvErr, const LVlinear_model  *model_in, const LVArray_Hdl<LVlinear_node> x_in, LVArray_Hdl<double> prob_estimates_out);
 
-
 //-- Print function (used for console output redirection to LabVIEW)
 // Logging is global for now
 void LVsvm_print_function(const char * message);
@@ -98,7 +96,7 @@ LVLIBLINEAR_API void CALLCONV LVlinear_delete_logging_userevent(lvError *lvErr, 
 
 //-- Helper functions
 
-// Assigns the cluster from LabVIEW to a svm_parameter struct 
+// Assigns the cluster from LabVIEW to a svm_parameter struct
 // Arrays are not copied
 void LVConvertParameter(const LVlinear_parameter *param_in, parameter *param_out);
 

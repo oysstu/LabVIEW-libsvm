@@ -1,8 +1,3 @@
-/*
-LVUtility.h
-Created on: June 27, 2014
-*/
-
 /// <summary>
 /// Contains functions used to simplify moving data between LabVIEW and DLL.
 /// </summary>
@@ -50,11 +45,11 @@ enum LVTypecode
 // Function to return the correct typecode used in NumericArrayResize
 // TODO: Make more general using std:enable_if, std::is_signed/std::is_unsigned, std::is_integral along with size to determine typecode
 template<class T>	inline LVTypecode LVGetTypecode()	{ return LVTypecode::Unknown; };
-template<> inline LVTypecode LVGetTypecode<int8_t>()	{ return LVTypecode::I8;  };
+template<> inline LVTypecode LVGetTypecode<int8_t>()	{ return LVTypecode::I8; };
 template<> inline LVTypecode LVGetTypecode<int16_t>()	{ return LVTypecode::I16; };
 template<> inline LVTypecode LVGetTypecode<int32_t>()	{ return LVTypecode::I32; };
 template<> inline LVTypecode LVGetTypecode<int64_t>()	{ return LVTypecode::I64; };
-template<> inline LVTypecode LVGetTypecode<uint8_t>()	{ return LVTypecode::U8;  };
+template<> inline LVTypecode LVGetTypecode<uint8_t>()	{ return LVTypecode::U8; };
 template<> inline LVTypecode LVGetTypecode<uint16_t>()	{ return LVTypecode::U16; };
 template<> inline LVTypecode LVGetTypecode<uint32_t>()	{ return LVTypecode::U32; };
 template<> inline LVTypecode LVGetTypecode<uint64_t>()	{ return LVTypecode::U64; };
@@ -66,7 +61,7 @@ template<> inline LVTypecode LVGetTypecode<cmplx128>()	{ return LVTypecode::CDB;
 template<> inline LVTypecode LVGetTypecode<cmplxExt>()	{ return LVTypecode::CXT; };
 
 // Throw in the missing LabVIEW defines for good measure
-template<> inline LVTypecode LVGetTypecode<int8>()		{ return LVTypecode::I8;  };
+template<> inline LVTypecode LVGetTypecode<int8>()		{ return LVTypecode::I8; };
 //template<> inline LVTypecode LVGetTypecode<int16>()	{ return LVTypecode::I16; };
 template<> inline LVTypecode LVGetTypecode<int32>()		{ return LVTypecode::I32; };
 //template<> inline LVTypecode LVGetTypecode<int64>()	{ return LVTypecode::I64; };
@@ -91,7 +86,7 @@ void LVWriteStringHandle(LStrHandle &strHandle, const char* c_str);
 /// <param name='str'>The string to copy to LabVIEW.</param>
 void LVWriteStringHandle(LStrHandle &strHandle, std::string str);
 
-/// <summary> 
+/// <summary>
 ///		Converts the string to utf8.
 ///		Then allocates room for the string in the handle and copies data over.
 ///	</summary>
@@ -99,8 +94,7 @@ void LVWriteStringHandle(LStrHandle &strHandle, std::string str);
 /// <param name='wstr'>The string to copy to LabVIEW.</param>
 void LVWriteStringHandle(LStrHandle &strHandle, std::wstring wstr);
 
-
-/// <summary> 
+/// <summary>
 /// Changes the size of an array of numeric.
 /// Does not update the dimSize parameter.
 ///	</summary>
@@ -126,8 +120,8 @@ void LVResizeNumericArrayHandle(LVArray_Hdl<T, dim> &handle, size_t newSize) {
 		throw LVException(__FILE__, __LINE__, "Failed to resize numeric array (out of memory?).");
 }
 
-/// <summary> 
-/// Allocates room for an array of complex types (clusters) in LabVIEW. 
+/// <summary>
+/// Allocates room for an array of complex types (clusters) in LabVIEW.
 /// Does not update the dimSize parameter.
 /// Use ResizeNumericArray or LVResizeNumericArray for arrays of plain data.
 /// The cluster/struct in question should have been declared with the correct alignment.
@@ -137,7 +131,7 @@ void LVResizeNumericArrayHandle(LVArray_Hdl<T, dim> &handle, size_t newSize) {
 template<class T, int dim>
 void LVResizeCompositeArrayHandle(LVArray_Hdl<T, dim> &handle, size_t newSize){
 	// Taking the sizeof the entire array cluster automatically accounts for padding on 64-bit LabVIEW
-	size_t sizeReq = sizeof(LVArray<T, dim>) + (newSize-1)*sizeof(T); 
+	size_t sizeReq = sizeof(LVArray<T, dim>) + (newSize - 1)*sizeof(T);
 
 	if (DSCheckHandle(handle) != noErr){
 		handle = reinterpret_cast<LVArray_Hdl<T, dim>>(DSNewHandle(sizeReq));
@@ -155,7 +149,7 @@ void LVResizeCompositeArrayHandle(LVArray_Hdl<T, dim> &handle, size_t newSize){
 	}
 }
 
-/// <summary> 
+/// <summary>
 /// Allocates room for an array of LabVIEW array handles (restricted to this for convenience).
 /// If new size is smaller, overshooting handles are deallocated.
 /// Valid handles are not created for new elements.

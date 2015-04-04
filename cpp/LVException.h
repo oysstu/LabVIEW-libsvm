@@ -1,14 +1,9 @@
-/*
-* LVException.h
-*
-*  Created on: Jun 1, 2012
-*      Author: Oystein Sture, CERN
-*/
-
-//! @ file
-//! Exception handler for LabVIEW related code.\n
-//! Contains functionality to return exceptions as errors in a labVIEW error cluster.
-//! @todo TODO Add support for warnings both in this class and in LabVIEW.
+/// <summary>
+///
+/// Exception handler for LabVIEW related code.\n
+/// Contains functionality to return exceptions as errors in a labVIEW error cluster.
+///
+/// </summary>
 
 #ifndef LVEXCEPTION_H_
 #define LVEXCEPTION_H_
@@ -47,7 +42,8 @@ public:
 #else
 		m_debug(false)
 #endif
-	{/* Empty */}
+	{/* Empty */
+	}
 
 	//! Constructor with custom error code
 	explicit LVException(const char * file, const int line, const int code, const std::string msg)
@@ -62,7 +58,8 @@ public:
 #else
 		m_debug(false)
 #endif
-	{/* Empty */}
+	{/* Empty */
+	}
 
 	//! Destructor.
 	virtual ~LVException() throw() {};

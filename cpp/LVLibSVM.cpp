@@ -12,9 +12,6 @@
 #include "LVUtility.h"
 #include "LVException.h"
 
-
-
-
 void LVsvm_train(lvError *lvErr, const LVsvm_problem *prob_in, const LVsvm_parameter *param_in, LVsvm_model * model_out){
 	try{
 		// Convert LVsvm_problem to svm_problem
@@ -30,9 +27,9 @@ void LVsvm_train(lvError *lvErr, const LVsvm_problem *prob_in, const LVsvm_param
 		for (unsigned int i = 0; i < (*x_in)->dimSize; i++){
 			// Assign the innermost svm_node array pointers to the array of pointers
 			auto xi_in_Hdl = (*x_in)->elt[i];
-			x[i] = reinterpret_cast<svm_node*>( (*xi_in_Hdl)->elt );
+			x[i] = reinterpret_cast<svm_node*>((*xi_in_Hdl)->elt);
 		}
-		
+
 		// Assign parameters to svm_parameter
 		std::unique_ptr<svm_parameter> param(new svm_parameter());
 		LVConvertParameter(param_in, param.get());
@@ -44,7 +41,7 @@ void LVsvm_train(lvError *lvErr, const LVsvm_problem *prob_in, const LVsvm_param
 
 		// Train model
 		svm_model *model = svm_train(prob.get(), param.get());
-		
+
 		// Copy the data into LabVIEW memory (hardcopy)
 		LVConvertModel(model, model_out);
 
@@ -181,7 +178,6 @@ double	LVsvm_predict_values(lvError *lvErr, const LVsvm_model *model_in, const L
 		if (model->param.svm_type == ONE_CLASS ||
 			model->param.svm_type == EPSILON_SVR ||
 			model->param.svm_type == NU_SVR){
-
 			LVResizeNumericArrayHandle(dec_values_out, 1);
 			(*dec_values_out)->dimSize = 1;
 		}
@@ -265,7 +261,6 @@ double	LVsvm_predict_probability(lvError *lvErr, const LVsvm_model *model_in, co
 //int LVsvm_save_model(lvError *lvErr, const char *model_file_name_in, const svm_model *model_in);
 //void LVsvm_load_model(lvError *lvErr, const char *model_file_name_in, svm_model *model_out);
 
-
 //-- Print function (console logging)
 void LVsvm_print_function(const char * message){
 	LVUserEventRef *usrEv = loggingUsrEv;
@@ -284,20 +279,19 @@ void LVsvm_print_function(const char * message){
 	}
 }
 
-void LVsvm_set_logging_userevent(lvError *lvErr, LVUserEventRef *loggingUserEvent_in) { 
-	loggingUsrEv = loggingUserEvent_in; 
+void LVsvm_set_logging_userevent(lvError *lvErr, LVUserEventRef *loggingUserEvent_in) {
+	loggingUsrEv = loggingUserEvent_in;
 	svm_set_print_string_function(LVsvm_print_function);
 }
 
-void LVsvm_get_logging_userevent(lvError *lvErr, LVUserEventRef *loggingUserEvent_out) { 
-	loggingUserEvent_out = loggingUsrEv; 
+void LVsvm_get_logging_userevent(lvError *lvErr, LVUserEventRef *loggingUserEvent_out) {
+	loggingUserEvent_out = loggingUsrEv;
 }
 
-void LVsvm_delete_logging_userevent(lvError *lvErr, LVUserEventRef *loggingUserEvent_out) { 
-	loggingUserEvent_out = loggingUsrEv; 
+void LVsvm_delete_logging_userevent(lvError *lvErr, LVUserEventRef *loggingUserEvent_out) {
+	loggingUserEvent_out = loggingUsrEv;
 	loggingUsrEv = nullptr;
 }
-
 
 // -- Helper functions
 
@@ -317,10 +311,9 @@ void LVConvertParameter(const LVsvm_parameter *param_in, svm_parameter *param_ou
 	param_out->shrinking = param_in->shrinking;
 	param_out->probability = param_in->probability;
 
-
 	if ((*(param_in->weight))->dimSize != (*(param_in->weight_label))->dimSize)
 		throw LVException(__FILE__, __LINE__, "Parameter error: the number of elements in weight and weight_label does not match.");
-	
+
 	param_out->nr_weight = (*(param_in->weight))->dimSize;
 
 	//-- Array assigments
@@ -337,7 +330,6 @@ void LVConvertParameter(const LVsvm_parameter *param_in, svm_parameter *param_ou
 	else
 		param_out->weight = nullptr;
 }
-
 
 void LVConvertParameter(const svm_parameter *param_in, LVsvm_parameter *param_out){
 	param_out->svm_type = param_in->svm_type;
@@ -365,7 +357,6 @@ void LVConvertParameter(const svm_parameter *param_in, LVsvm_parameter *param_ou
 	MoveBlock(param_in->weight_label, (*(param_out->weight_label))->elt, nr_weight * sizeof(int32_t));
 	(*(param_out->weight_label))->dimSize = nr_weight;
 }
-
 
 void LVConvertModel(const LVsvm_model *model_in, svm_model *model_out, std::unique_ptr<svm_node*[]> &SV, std::unique_ptr<double*[]> &sv_coef){
 	// Assign the parameters
@@ -413,7 +404,6 @@ void LVConvertModel(const LVsvm_model *model_in, svm_model *model_out, std::uniq
 	else
 		model_out->nSV = nullptr;
 
-
 	//-- 2D Array assigments (pointer-to-pointer)
 
 	// SV
@@ -446,7 +436,7 @@ void LVConvertModel(const LVsvm_model *model_in, svm_model *model_out, std::uniq
 void LVConvertModel(const svm_model *model_in, LVsvm_model *model_out){
 	// Convert parameters
 	LVConvertParameter(&model_in->param, &model_out->param);
-	
+
 	// Convert svm_model to LVsvm_model
 	model_out->nr_class = model_in->nr_class;
 	model_out->l = model_in->l;
@@ -464,7 +454,6 @@ void LVConvertModel(const svm_model *model_in, LVsvm_model *model_out){
 	LVResizeNumericArrayHandle(model_out->rho, nr_pairs);
 	MoveBlock(model_in->rho, (*(model_out->rho))->elt, nr_pairs * sizeof(double));
 	(*model_out->rho)->dimSize = nr_pairs;
-
 
 	// Probability (probA and probB)
 	if ((model_in->param).probability){
@@ -493,7 +482,6 @@ void LVConvertModel(const svm_model *model_in, LVsvm_model *model_out){
 	LVResizeNumericArrayHandle(model_out->sv_indices, l);
 	MoveBlock(model_in->sv_indices, (*(model_out->sv_indices))->elt, l * sizeof(int32_t));
 	(*model_out->sv_indices)->dimSize = l;
-
 
 	// SV (support vectors) - total_sv (l) outer dim, variable inner dim
 	LVResizeHandleArrayHandle(model_out->SV, l);

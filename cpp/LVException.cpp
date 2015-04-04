@@ -1,10 +1,3 @@
-/*
-* LVException.cpp
-*
-*  Created on: Jun 1, 2012
-*      Author: Oystein Sture, CERN
-*/
-
 #include "stdafx.h"
 
 #include "LVException.h"
@@ -12,7 +5,6 @@
 #include <iostream>
 #include <string>
 #include "extcode.h"
-
 
 std::ostream &operator<<(std::ostream &stream, LVException &ex) {
 	stream << "Exception: " << ex.what() << "\n";
@@ -59,11 +51,9 @@ void LVException::populateErrorCluster(lvError * err) {
 
 	// Set the string length variable
 	(*err->source)->cnt = static_cast<int32>(m_messageLength);
-
 }
 
 void LVException::postLVErrorEvent(LVUserEventRef * errorUserEvent) {
-
 	lvError errorCluster;
 	populateErrorCluster(&errorCluster);
 
@@ -85,5 +75,3 @@ void LVException::returnStdException(lvError * lvErr, const char * file, const i
 	LVException lvex(file, line, msg);
 	lvex.returnError(lvErr);
 }
-
-
