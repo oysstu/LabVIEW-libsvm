@@ -10,4 +10,7 @@ The supplied binaries are compiled using Visual Studio 2013.
 The wrapper is developed in LabVIEW 2014, but the distributed VIPM packages are compatible with LabVIEW 2011 and later.
 Let me know if you would like me to extend support for previous versions.
 
-Currently there are only two examples. Look at the libsvm/liblinear documentation if something should be unclear. The documentation for the python wrapper in scikit-learn is also very useful
+Currently there are only two examples. Look at the libsvm/liblinear documentation if something should be unclear. The documentation for the python wrapper in scikit-learn is also very useful.
+
+Although there exists an old wrapper for libsvm, it uses the (now) unsupported CIN interface and passes data through text files.
+This implementation uses Call Library Function Nodes, and passes data directly.
