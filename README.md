@@ -1,6 +1,6 @@
 # LabVIEW-libsvm
-A LabVIEW wrapper for libsvm (320) and liblinear (1.19).
-It can currently be considered experimental, as it has not been extensively tested.
+A LabVIEW wrapper for libsvm (320). An interface to liblinear (1.19) is also included.
+The wrapper can currently be considered experimental, as it has not been extensively tested.
 
 The easiest way to install the library is through the VIPM package.
 This installs both the VIs and binary components to vi.lib.
