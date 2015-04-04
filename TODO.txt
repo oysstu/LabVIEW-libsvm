@@ -1,0 +1,6 @@
+## TODOs
+1.	Redirect stdout and stderr, used in libsvm, to a file (using freopen("file.txt","w",stdout/stderr)) or user event.
+2.	Make the print function user events per-instance
+3.	Implement file saving/loading using the libsvm interface for portability
+4.	Implement user-friendly precomputed kernels (in LabVIEW)
+5.	Implement normalization/scaling of data in LabVIEW (similar to scikit-learn)
