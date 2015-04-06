@@ -1,6 +1,7 @@
-## TODOs
+## TODOs (not in any particular order)
 1.	Redirect stdout and stderr, used in libsvm, to a file (using freopen("file.txt","w",stdout/stderr)) or user event.
 2.	Make the print function user events per-instance
 3.	Implement file saving/loading using the libsvm interface for portability
 4.	Implement user-friendly precomputed kernels (in LabVIEW)
-5.	Implement normalization/scaling of data in LabVIEW (similar to scikit-learn)
+5a.	Make an object-oriented interface in LabVIEW.
+5b.	Encapsulate the svm_problem / linear_problem in a DVR to avoid data duplication, might be necessary for huge datasets.

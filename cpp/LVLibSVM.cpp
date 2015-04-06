@@ -7,6 +7,7 @@
 #include <memory>
 #include <extcode.h>
 #include <svm.h>
+#include <errno.h>
 
 #include "LVTypeDecl.h"
 #include "LVUtility.h"
@@ -54,7 +55,6 @@ void LVsvm_train(lvError *lvErr, const LVsvm_problem *prob_in, const LVsvm_param
 		svm_free_model_content(model);
 	}
 	catch (LVException &ex) {
-		ex.returnError(lvErr);
 		// To avoid LabVIEW reading and utilizing bad memory, the dimension sizes of arrays is set to zero
 		(*(model_out->label))->dimSize = 0;
 		(*(model_out->nSV))->dimSize = 0;
@@ -65,9 +65,10 @@ void LVsvm_train(lvError *lvErr, const LVsvm_problem *prob_in, const LVsvm_param
 		(*(model_out->sv_coef))->dimSize[0] = 0;
 		(*(model_out->sv_coef))->dimSize[1] = 0;
 		(*(model_out->sv_indices))->dimSize = 0;
+
+		ex.returnError(lvErr);
 	}
 	catch (std::exception &ex) {
-		LVException::returnStdException(lvErr, __FILE__, __LINE__, ex);
 		(*(model_out->label))->dimSize = 0;
 		(*(model_out->nSV))->dimSize = 0;
 		(*(model_out->probA))->dimSize = 0;
@@ -78,10 +79,10 @@ void LVsvm_train(lvError *lvErr, const LVsvm_problem *prob_in, const LVsvm_param
 		(*(model_out->sv_coef))->dimSize[0] = 0;
 		(*(model_out->sv_coef))->dimSize[1] = 0;
 		(*(model_out->sv_indices))->dimSize = 0;
+
+		LVException::returnStdException(lvErr, __FILE__, __LINE__, ex);
 	}
 	catch (...) {
-		LVException ex(__FILE__, __LINE__, "Unknown exception has occurred");
-		ex.returnError(lvErr);
 		(*(model_out->label))->dimSize = 0;
 		(*(model_out->nSV))->dimSize = 0;
 		(*(model_out->probA))->dimSize = 0;
@@ -91,6 +92,9 @@ void LVsvm_train(lvError *lvErr, const LVsvm_problem *prob_in, const LVsvm_param
 		(*(model_out->sv_coef))->dimSize[0] = 0;
 		(*(model_out->sv_coef))->dimSize[1] = 0;
 		(*(model_out->sv_indices))->dimSize = 0;
+
+		LVException ex(__FILE__, __LINE__, "Unknown exception has occurred");
+		ex.returnError(lvErr);
 	}
 }
 
@@ -134,17 +138,17 @@ void LVsvm_cross_validation(lvError *lvErr, const LVsvm_problem *prob_in, const 
 		(*target_out)->dimSize = nr_nodes;
 	}
 	catch (LVException &ex) {
-		ex.returnError(lvErr);
 		(*target_out)->dimSize = 0;
+		ex.returnError(lvErr);
 	}
 	catch (std::exception &ex) {
-		LVException::returnStdException(lvErr, __FILE__, __LINE__, ex);
 		(*target_out)->dimSize = 0;
+		LVException::returnStdException(lvErr, __FILE__, __LINE__, ex);
 	}
 	catch (...) {
+		(*target_out)->dimSize = 0;
 		LVException ex(__FILE__, __LINE__, "Unknown exception has occurred");
 		ex.returnError(lvErr);
-		(*target_out)->dimSize = 0;
 	}
 }
 
@@ -267,10 +271,6 @@ double	LVsvm_predict_probability(lvError *lvErr, const LVsvm_model *model_in, co
 	}
 }
 
-// File operations
-//int LVsvm_save_model(lvError *lvErr, const char *model_file_name_in, const svm_model *model_in);
-//void LVsvm_load_model(lvError *lvErr, const char *model_file_name_in, svm_model *model_out);
-
 //-- Print function (console logging)
 void LVsvm_print_function(const char * message){
 	LVUserEventRef *usrEv = loggingUsrEv;
@@ -303,7 +303,9 @@ void LVsvm_delete_logging_userevent(lvError *lvErr, LVUserEventRef *loggingUserE
 	loggingUsrEv = nullptr;
 }
 
+//
 // -- Helper functions
+//
 
 void LVConvertParameter(const LVsvm_parameter *param_in, svm_parameter *param_out){
 	//-- Copy assignments
@@ -342,6 +344,9 @@ void LVConvertParameter(const LVsvm_parameter *param_in, svm_parameter *param_ou
 }
 
 void LVConvertParameter(const svm_parameter *param_in, LVsvm_parameter *param_out){
+	if (param_in == nullptr)
+		return;
+
 	param_out->svm_type = param_in->svm_type;
 	param_out->kernel_type = param_in->kernel_type;
 	param_out->degree = param_in->degree;
@@ -356,16 +361,21 @@ void LVConvertParameter(const svm_parameter *param_in, LVsvm_parameter *param_ou
 	param_out->probability = param_in->probability;
 
 	int nr_weight = param_in->nr_weight;
+	// Weights
+	if (nr_weight > 0){
+		if (param_in->weight != nullptr){
+			LVResizeNumericArrayHandle(param_out->weight, nr_weight);
+			MoveBlock(param_in->weight, (*(param_out->weight))->elt, nr_weight * sizeof(double));
+			(*(param_out->weight))->dimSize = nr_weight;
+		}	
 
-	// Weight
-	LVResizeNumericArrayHandle(param_out->weight, nr_weight);
-	MoveBlock(param_in->weight, (*(param_out->weight))->elt, nr_weight * sizeof(double));
-	(*(param_out->weight))->dimSize = nr_weight;
-
-	// Weight_label (number of support vectors for each class)
-	LVResizeNumericArrayHandle(param_out->weight_label, nr_weight);
-	MoveBlock(param_in->weight_label, (*(param_out->weight_label))->elt, nr_weight * sizeof(int32_t));
-	(*(param_out->weight_label))->dimSize = nr_weight;
+		if (param_in->weight_label != nullptr){
+			// Weight_label (number of support vectors for each class)
+			LVResizeNumericArrayHandle(param_out->weight_label, nr_weight);
+			MoveBlock(param_in->weight_label, (*(param_out->weight_label))->elt, nr_weight * sizeof(int32_t));
+			(*(param_out->weight_label))->dimSize = nr_weight;
+		}
+	}
 }
 
 void LVConvertModel(const LVsvm_model *model_in, svm_model *model_out, std::unique_ptr<svm_node*[]> &SV, std::unique_ptr<double*[]> &sv_coef){
@@ -445,6 +455,9 @@ void LVConvertModel(const LVsvm_model *model_in, svm_model *model_out, std::uniq
 
 void LVConvertModel(const svm_model *model_in, LVsvm_model *model_out){
 	// Convert parameters
+	if (model_in == nullptr)
+		return;
+
 	LVConvertParameter(&model_in->param, &model_out->param);
 
 	// Convert svm_model to LVsvm_model
@@ -456,25 +469,32 @@ void LVConvertModel(const svm_model *model_in, LVsvm_model *model_out){
 	int l = model_in->l;							// Total SV count
 
 	// Label
-	LVResizeNumericArrayHandle(model_out->label, nr_class);
-	MoveBlock(model_in->label, (*(model_out->label))->elt, nr_class * sizeof(int32_t));
-	(*model_out->label)->dimSize = model_in->nr_class;
+	if (model_in->label != nullptr){
+		LVResizeNumericArrayHandle(model_out->label, nr_class);
+		MoveBlock(model_in->label, (*(model_out->label))->elt, nr_class * sizeof(int32_t));
+		(*model_out->label)->dimSize = model_in->nr_class;
+	}
 
 	// Rho
-	LVResizeNumericArrayHandle(model_out->rho, nr_pairs);
-	MoveBlock(model_in->rho, (*(model_out->rho))->elt, nr_pairs * sizeof(double));
-	(*model_out->rho)->dimSize = nr_pairs;
+	if (model_in->rho != nullptr){
+		LVResizeNumericArrayHandle(model_out->rho, nr_pairs);
+		MoveBlock(model_in->rho, (*(model_out->rho))->elt, nr_pairs * sizeof(double));
+		(*model_out->rho)->dimSize = nr_pairs;
+	}
 
 	// Probability (probA and probB)
 	if ((model_in->param).probability){
-		LVResizeNumericArrayHandle(model_out->probA, nr_pairs);
-		LVResizeNumericArrayHandle(model_out->probB, nr_pairs);
+		if (model_in->probA != nullptr){
+			LVResizeNumericArrayHandle(model_out->probA, nr_pairs);
+			MoveBlock(model_in->probA, (*(model_out->probA))->elt, nr_pairs * sizeof(double));
+			(*(model_out->probA))->dimSize = nr_pairs;
+		}
 
-		MoveBlock(model_in->probA, (*(model_out->probA))->elt, nr_pairs * sizeof(double));
-		MoveBlock(model_in->probB, (*(model_out->probB))->elt, nr_pairs * sizeof(double));
-
-		(*(model_out->probA))->dimSize = nr_pairs;
-		(*(model_out->probB))->dimSize = nr_pairs;
+		if (model_in->probB != nullptr){
+			LVResizeNumericArrayHandle(model_out->probB, nr_pairs);
+			MoveBlock(model_in->probB, (*(model_out->probB))->elt, nr_pairs * sizeof(double));
+			(*(model_out->probB))->dimSize = nr_pairs;
+		}
 	}
 	else{
 		if (DSCheckHandle(model_out->probA) != noErr)
@@ -484,46 +504,154 @@ void LVConvertModel(const svm_model *model_in, LVsvm_model *model_out){
 	}
 
 	// nSVs (number of support vectors for each class)
-	LVResizeNumericArrayHandle(model_out->nSV, nr_class);
-	MoveBlock(model_in->nSV, (*(model_out->nSV))->elt, nr_class * sizeof(int32_t));
-	(*model_out->nSV)->dimSize = nr_class;
+	if (model_in->nSV != nullptr){
+		LVResizeNumericArrayHandle(model_out->nSV, nr_class);
+		MoveBlock(model_in->nSV, (*(model_out->nSV))->elt, nr_class * sizeof(int32_t));
+		(*model_out->nSV)->dimSize = nr_class;
+	}
 
 	// sv_indices
-	LVResizeNumericArrayHandle(model_out->sv_indices, l);
-	MoveBlock(model_in->sv_indices, (*(model_out->sv_indices))->elt, l * sizeof(int32_t));
-	(*model_out->sv_indices)->dimSize = l;
+	if (model_in->sv_indices != nullptr){
+		LVResizeNumericArrayHandle(model_out->sv_indices, l);
+		MoveBlock(model_in->sv_indices, (*(model_out->sv_indices))->elt, l * sizeof(int32_t));
+		(*model_out->sv_indices)->dimSize = l;
+	}
 
 	// SV (support vectors) - total_sv (l) outer dim, variable inner dim
-	LVResizeHandleArrayHandle(model_out->SV, l);
+	if (model_in->SV != nullptr){
+		LVResizeHandleArrayHandle(model_out->SV, l);
 
-	for (int i = 0; i < l; i++){
-		// Find inner size by looking for -1 index (except precompute, which has a single element)
-		size_t n_nodes = 1;
+		for (int i = 0; i < l; i++){
+			if (model_in->SV[i] != nullptr){
+				// Find inner size by looking for -1 index (except precompute, which has a single element)
+				size_t n_nodes = 1;
 
-		const svm_node *p = model_in->SV[i];
-		if (model_in->param.kernel_type != PRECOMPUTED){
-			while (p->index != -1)
-			{
-				n_nodes++;
-				p++;
+				const svm_node *p = model_in->SV[i];
+				if (model_in->param.kernel_type != PRECOMPUTED){
+					while (p->index != -1)
+					{
+						n_nodes++;
+						p++;
+					}
+				}
+
+				LVResizeCompositeArrayHandle((*(model_out->SV))->elt[i], n_nodes);
+
+				// Copy data over
+				MoveBlock(model_in->SV[i], (*(*(model_out->SV))->elt[i])->elt, sizeof(svm_node)*n_nodes);
+				(*(*(model_out->SV))->elt[i])->dimSize = static_cast<uint32_t>(n_nodes);
 			}
 		}
 
-		LVResizeCompositeArrayHandle((*(model_out->SV))->elt[i], n_nodes);
-
-		// Copy data over
-		MoveBlock(model_in->SV[i], (*(*(model_out->SV))->elt[i])->elt, sizeof(svm_node)*n_nodes);
-		(*(*(model_out->SV))->elt[i])->dimSize = static_cast<uint32_t>(n_nodes);
+		(*(model_out->SV))->dimSize = l;
 	}
-
-	(*(model_out->SV))->dimSize = l;
 
 	// sv_coef
-	LVResizeNumericArrayHandle(model_out->sv_coef, (nr_class - 1) * l);
-	for (int i = 0; i < nr_class - 1; i++){
-		MoveBlock(model_in->sv_coef[i], (*(model_out->sv_coef))->elt + i*l, l*sizeof(double));
-	}
+	if (model_in->sv_coef != nullptr){
+		LVResizeNumericArrayHandle(model_out->sv_coef, (nr_class - 1) * l);
+		for (int i = 0; i < nr_class - 1; i++){
+			MoveBlock(model_in->sv_coef[i], (*(model_out->sv_coef))->elt + i*l, l*sizeof(double));
+		}
 
-	(*(model_out->sv_coef))->dimSize[0] = nr_class - 1;
-	(*(model_out->sv_coef))->dimSize[1] = l;
+		(*(model_out->sv_coef))->dimSize[0] = nr_class - 1;
+		(*(model_out->sv_coef))->dimSize[1] = l;
+	}
+}
+
+
+//
+//-- File saving/loading
+//
+
+void LVsvm_save_model(lvError *lvErr, const char *path_in, const LVsvm_model *model_in){
+	try{
+		// Convert LVsvm_model to svm_model
+		std::unique_ptr<svm_model> model(new svm_model);
+		std::unique_ptr<svm_node*[]> SV;
+		std::unique_ptr<double*[]> sv_coef;
+		LVConvertModel(model_in, model.get(), SV, sv_coef);
+
+		int err = svm_save_model(path_in, model.get());
+		if (err == -1){
+			// Allocate room for output error message (truncated if buffer is too small)
+			char buf[64];
+			strerror_s(buf, 64, errno);
+			errno = 0;
+			throw LVException(__FILE__, __LINE__, "Model save operation failed (" + std::string(buf) + ").");
+		}
+	}
+	catch (LVException &ex) {
+		ex.returnError(lvErr);
+	}
+	catch (std::exception &ex) {
+		LVException::returnStdException(lvErr, __FILE__, __LINE__, ex);
+	}
+	catch (...) {
+		LVException ex(__FILE__, __LINE__, "Unknown exception has occurred");
+		ex.returnError(lvErr);
+	}
+}
+
+void LVsvm_load_model(lvError *lvErr, const char *path_in, LVsvm_model *model_out){
+	try{
+		svm_model *model = svm_load_model(path_in);
+
+		// libsvm returns uninitialized values for the parameters (dick move)
+		(model->param) = { 0 };
+
+		if (model == nullptr){
+			// Allocate room for output error message (truncated if buffer is too small)
+			char buf[64];
+			strerror_s(buf, 64, errno);
+			errno = 0;
+			throw LVException(__FILE__, __LINE__, "Model load operation failed (" + std::string(buf) + ").");
+		}
+		else{
+			LVConvertModel(model, model_out);
+			svm_free_model_content(model);
+		}
+	}
+	catch (LVException &ex) {
+		(*(model_out->label))->dimSize = 0;
+		(*(model_out->nSV))->dimSize = 0;
+		(*(model_out->probA))->dimSize = 0;
+		(*(model_out->probB))->dimSize = 0;
+		(*(model_out->rho))->dimSize = 0;
+		(*(model_out->SV))->dimSize = 0;
+		(*(model_out->SV))->dimSize = 0;
+		(*(model_out->sv_coef))->dimSize[0] = 0;
+		(*(model_out->sv_coef))->dimSize[1] = 0;
+		(*(model_out->sv_indices))->dimSize = 0;
+
+		ex.returnError(lvErr);
+	}
+	catch (std::exception &ex) {
+		(*(model_out->label))->dimSize = 0;
+		(*(model_out->nSV))->dimSize = 0;
+		(*(model_out->probA))->dimSize = 0;
+		(*(model_out->probB))->dimSize = 0;
+		(*(model_out->rho))->dimSize = 0;
+		(*(model_out->SV))->dimSize = 0;
+		(*(model_out->SV))->dimSize = 0;
+		(*(model_out->sv_coef))->dimSize[0] = 0;
+		(*(model_out->sv_coef))->dimSize[1] = 0;
+		(*(model_out->sv_indices))->dimSize = 0;
+
+		LVException::returnStdException(lvErr, __FILE__, __LINE__, ex);
+	}
+	catch (...) {
+		(*(model_out->label))->dimSize = 0;
+		(*(model_out->nSV))->dimSize = 0;
+		(*(model_out->probA))->dimSize = 0;
+		(*(model_out->probB))->dimSize = 0;
+		(*(model_out->rho))->dimSize = 0;
+		(*(model_out->SV))->dimSize = 0;
+		(*(model_out->SV))->dimSize = 0;
+		(*(model_out->sv_coef))->dimSize[0] = 0;
+		(*(model_out->sv_coef))->dimSize[1] = 0;
+		(*(model_out->sv_indices))->dimSize = 0;
+
+		LVException ex(__FILE__, __LINE__, "Unknown exception has occurred");
+		ex.returnError(lvErr);
+	}
 }

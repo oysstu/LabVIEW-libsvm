@@ -111,10 +111,10 @@ LVLIBSVM_API double		CALLCONV LVsvm_predict_values(lvError *lvErr, const LVsvm_m
 
 LVLIBSVM_API double		CALLCONV LVsvm_predict_probability(lvError *lvErr, const LVsvm_model *model_in, const LVArray_Hdl<LVsvm_node> x_in, LVArray_Hdl<double> prob_estimates_out);
 
-//-- File operations (TODO)
+//-- File operations
 // File saving/loading should be done through LabVIEW API, these are included for interoperability
-//LVLIBSVM_API int		CALLCONV LVsvm_save_model(lvError *lvErr, const char *model_file_name_in, const svm_model *model_in);
-//LVLIBSVM_API void		CALLCONV LVsvm_load_model(lvError *lvErr, const char *model_file_name_in, svm_model *model_out);
+LVLIBSVM_API void		CALLCONV LVsvm_save_model(lvError *lvErr, const char *path_in, const LVsvm_model *model_in);
+LVLIBSVM_API void		CALLCONV LVsvm_load_model(lvError *lvErr, const char *path_in, LVsvm_model *model_out);
 
 //-- Print function (used for console output redirection to LabVIEW)
 // Logging is global for now
