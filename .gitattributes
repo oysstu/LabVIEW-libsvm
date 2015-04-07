@@ -1,0 +1,2 @@
+# Github detects the libsvm test dataset as perl6, this ignores it
+LabVIEW/Examples/Testing data/* linguist-vendored
