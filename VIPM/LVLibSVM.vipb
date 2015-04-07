@@ -1,4 +1,4 @@
-<VI_Package_Builder_Settings Version="0.6" Created_Date="2015-04-03 18:25:14" Modified_Date="2015-04-07 00:05:03" Creator="OS" Comments="" ID="db7a7c43fca35db789d56e0a4fb7cf36">
+<VI_Package_Builder_Settings Version="0.6" Created_Date="2015-04-03 18:25:14" Modified_Date="2015-04-04 15:20:17" Creator="OS" Comments="" ID="a26b8fcc3674b87b2ebe8b5de3a5e6db">
   <Library_General_Settings>
     <Package_File_Name>LVLibSVM</Package_File_Name>
     <Library_Version>0.1.0.2</Library_Version>
@@ -17,7 +17,10 @@
   </Library_General_Settings>
   <Advanced_Settings>
     <Package_Dependencies>
-      <Additional_External_Dependencies>openg.org_lib_openg_toolkit &gt;=4.0.1.9</Additional_External_Dependencies>
+      <Additional_External_Dependencies>oglib_array &gt;=4.1.1.14</Additional_External_Dependencies>
+      <Additional_External_Dependencies>oglib_error &gt;=4.2.0.23</Additional_External_Dependencies>
+      <Additional_External_Dependencies>oglib_string &gt;=4.1.0.12</Additional_External_Dependencies>
+      <Additional_External_Dependencies>oglib_time &gt;=4.0.1.3</Additional_External_Dependencies>
     </Package_Dependencies>
     <Custom_Action_VIs>
       <Pre-Build_VI/>
@@ -305,7 +308,7 @@
         <Path>..\LabVIEW\Logger</Path>
         <VI_Title/>
       </Items_Data>
-      <GUID>A0343C4778EF3FA11FCC32073F4248B2</GUID>
+      <GUID>A9C513F92326F609912DB1B48323FE53</GUID>
     </Functions_Palette_Data>
     <Functions_Palette_Data>
       <Parent_Palette_Index>0</Parent_Palette_Index>
@@ -354,7 +357,7 @@
         <Path>..\LabVIEW\Examples\SVM_Train_FromFile.vi</Path>
         <VI_Title/>
       </Items_Data>
-      <GUID>D3AA96E57E7AD9680252073AB97150E2</GUID>
+      <GUID>03A56D6181FBBDF9F0AF1ED858A7B250</GUID>
     </Functions_Palette_Data>
     <Functions_Palette_Data>
       <Parent_Palette_Index>0</Parent_Palette_Index>
@@ -386,7 +389,7 @@
           <Column>3</Column>
         </Position>
         <Icon>00000000</Icon>
-        <Path>..\LabVIEW\Liblinear Wrapper\SubVIs\liblinear_add_node_padding.vi</Path>
+        <Path>..\LabVIEW\Liblinear Wrapper\liblinear_add_node_padding.vi</Path>
         <VI_Title/>
       </Items_Data>
       <Items_Data>
@@ -459,7 +462,7 @@
         <Path>..\LabVIEW\Liblinear Wrapper\liblinear_predict_probability.vi</Path>
         <VI_Title/>
       </Items_Data>
-      <GUID>8CC9001F38A8FFF6636FB7557973B01C</GUID>
+      <GUID>EBFD2804D4287E17341C24FD8A2AF016</GUID>
     </Functions_Palette_Data>
     <Functions_Palette_Data>
       <Parent_Palette_Index>0</Parent_Palette_Index>
@@ -491,7 +494,7 @@
           <Column>7</Column>
         </Position>
         <Icon>00000000</Icon>
-        <Path>..\LabVIEW\Libsvm Wrapper\SubVIs\svm_add_node_padding.vi</Path>
+        <Path>..\LabVIEW\Libsvm Wrapper\svm_add_node_padding.vi</Path>
         <VI_Title/>
       </Items_Data>
       <Items_Data>
@@ -606,7 +609,7 @@
         <Path>..\LabVIEW\Libsvm Wrapper\svm_get_libsvm_version.vi</Path>
         <VI_Title/>
       </Items_Data>
-      <GUID>FC60EAD4A36A43C516722AF37E172CA6</GUID>
+      <GUID>4195E9386F92ED6F2DE663BEE96D9306</GUID>
     </Functions_Palette_Data>
     <Functions_Palette_Data>
       <Parent_Palette_Index>0</Parent_Palette_Index>
@@ -669,7 +672,7 @@
         <Path>..\LabVIEW\Logger\LOG_Initialize.vi</Path>
         <VI_Title/>
       </Items_Data>
-      <GUID>411CCEFD04172943EFD71F3BBC46E48C</GUID>
+      <GUID>C6755697786968F304996B086AEFC7E3</GUID>
     </Functions_Palette_Data>
   </Library_Palette_Definition>
 </VI_Package_Builder_Settings>
