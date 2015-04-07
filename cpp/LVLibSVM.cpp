@@ -308,8 +308,10 @@ void LVsvm_delete_logging_userevent(lvError *lvErr, LVUserEventRef *loggingUserE
 //
 
 void LVConvertParameter(const LVsvm_parameter *param_in, svm_parameter *param_out){
+	if (param_in == nullptr || param_out == nullptr)
+		return;
+	
 	//-- Copy assignments
-
 	param_out->svm_type = param_in->svm_type;
 	param_out->kernel_type = param_in->kernel_type;
 	param_out->degree = param_in->degree;
@@ -331,20 +333,20 @@ void LVConvertParameter(const LVsvm_parameter *param_in, svm_parameter *param_ou
 	//-- Array assigments
 
 	// Weight label
-	if ((*(param_in->weight_label))->dimSize > 0)
+	if (param_in->weight_label != nullptr && (*(param_in->weight_label))->dimSize > 0)
 		param_out->weight_label = (*(param_in->weight_label))->elt;
 	else
 		param_out->weight_label = nullptr;
 
 	// Weight
-	if ((*(param_in->weight))->dimSize > 0)
+	if (param_in->weight != nullptr && (*(param_in->weight))->dimSize > 0)
 		param_out->weight = (*(param_in->weight))->elt;
 	else
 		param_out->weight = nullptr;
 }
 
 void LVConvertParameter(const svm_parameter *param_in, LVsvm_parameter *param_out){
-	if (param_in == nullptr)
+	if (param_in == nullptr || param_out == nullptr)
 		return;
 
 	param_out->svm_type = param_in->svm_type;

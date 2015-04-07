@@ -328,9 +328,14 @@ void LVConvertModel(const model *model_in, LVlinear_model *model_out){
 	int nr_feature = model_in->nr_feature;
 
 	// Label
-	LVResizeNumericArrayHandle(model_out->label, nr_class);
-	MoveBlock(model_in->label, (*(model_out->label))->elt, nr_class * sizeof(int32_t));
-	(*model_out->label)->dimSize = model_in->nr_class;
+	if (model_in->label != nullptr){
+		LVResizeNumericArrayHandle(model_out->label, nr_class);
+		MoveBlock(model_in->label, (*(model_out->label))->elt, nr_class * sizeof(int32_t));
+		(*model_out->label)->dimSize = model_in->nr_class;
+	}
+	else{
+		(*model_out->label)->dimSize = 0;
+	}
 
 	// w
 	int32_t nr_w = nr_feature * nr_class;
@@ -338,7 +343,12 @@ void LVConvertModel(const model *model_in, LVlinear_model *model_out){
 	if (model_in->bias >= 0)
 		nr_w += nr_class;
 
-	LVResizeNumericArrayHandle(model_out->w, nr_w);
-	MoveBlock(model_in->w, (*(model_out->w))->elt, nr_w * sizeof(double));
-	(*model_out->w)->dimSize = nr_w;
+	if (model_out->w != nullptr){
+		LVResizeNumericArrayHandle(model_out->w, nr_w);
+		MoveBlock(model_in->w, (*(model_out->w))->elt, nr_w * sizeof(double));
+		(*model_out->w)->dimSize = nr_w;
+	}
+	else{
+		(*model_out->w)->dimSize = 0;
+	}
 }
