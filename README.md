@@ -1,3 +1,5 @@
+![Palette](./Palette.png)
+
 ### Description
 A LabVIEW wrapper for libsvm (320). An interface to liblinear (1.19) is also included.
 The wrapper can currently be considered experimental, as it has not been extensively tested.
