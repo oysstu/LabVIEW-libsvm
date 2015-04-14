@@ -18,7 +18,7 @@ Let me know if you would like me to extend support for previous versions.
 
 ### Dependencies
 * libsvm and liblinear binaries (included in the VIPM package)
-* OpenG Toolkit VIs (installed by VIPM)
+* OpenG Toolkit VIs (automatically installed by VIPM)
 * [Visual Studio 2013 Visual C++ Redistributable](http://www.microsoft.com/en-us/download/details.aspx?id=40784) (x86 for 32bit LabVIEW, x64 for 64bit LabVIEW)
 
 
