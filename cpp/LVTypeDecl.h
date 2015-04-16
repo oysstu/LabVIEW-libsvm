@@ -11,6 +11,7 @@
 
 // Sets byte alignment to match LabVIEW (#pragma pack(1))
 // 64-bit LabVIEW should not be affected by this
+// Note: the type T must be declared with the correct byte packing elsewhere.
 #include "lv_prolog.h"
 
 // LabVIEW Template Array, default dimension 1
@@ -25,6 +26,7 @@ struct LVArray {
 // Specialization for 1D-arrays (non-array dimsize).
 template <class T>
 struct LVArray < T, 1 > {
+	static_assert(std::is_pod<T>::value, "LVArray type must be Plain-Old-Data (POD).");
 	uint32_t dimSize;
 	T elt[1];
 };

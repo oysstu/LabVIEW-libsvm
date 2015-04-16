@@ -78,7 +78,7 @@ static_assert (sizeof(LVsvm_node) == sizeof(svm_node), "Size of LVSvm_node does 
 
 // Check that padding is not inserted in between the two-dimensional sparse arrays used
 struct _LVsvm_one_element_cluster {
-	LVArray_Hdl<LVsvm_node> Cluster;
+	LVArray_Hdl<LVsvm_node> ClusterArr;
 };
 static_assert (sizeof(LVArray_Hdl<LVsvm_node>) == sizeof(_LVsvm_one_element_cluster), "Byte packing in one-element cluster present");
 

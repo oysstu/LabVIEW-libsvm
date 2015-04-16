@@ -271,38 +271,6 @@ double	LVsvm_predict_probability(lvError *lvErr, const LVsvm_model *model_in, co
 	}
 }
 
-//-- Print function (console logging)
-void LVsvm_print_function(const char * message){
-	LVUserEventRef *usrEv = loggingUsrEv;
-	if (usrEv != nullptr && message != nullptr){
-		// Filter out the progress messages (..... and *)
-		if (strcmp(message, ".") != 0 && strcmp(message, "*") != 0){
-			// Move the string to a handle
-			size_t length = strlen(message);
-			LStrHandle lvmsg = (LStrHandle)DSNewHandle(sizeof(int32_t) + length);
-			MoveBlock(message, (*lvmsg)->str, length);
-			(*lvmsg)->cnt = static_cast<int32>(length);
-
-			// Post the string to the user event
-			PostLVUserEvent(*usrEv, &lvmsg);
-		}
-	}
-}
-
-void LVsvm_set_logging_userevent(lvError *lvErr, LVUserEventRef *loggingUserEvent_in) {
-	loggingUsrEv = loggingUserEvent_in;
-	svm_set_print_string_function(LVsvm_print_function);
-}
-
-void LVsvm_get_logging_userevent(lvError *lvErr, LVUserEventRef *loggingUserEvent_out) {
-	loggingUserEvent_out = loggingUsrEv;
-}
-
-void LVsvm_delete_logging_userevent(lvError *lvErr, LVUserEventRef *loggingUserEvent_out) {
-	loggingUserEvent_out = loggingUsrEv;
-	loggingUsrEv = nullptr;
-}
-
 //
 // -- Helper functions
 //
@@ -345,37 +313,34 @@ void LVConvertParameter(const LVsvm_parameter *param_in, svm_parameter *param_ou
 		param_out->weight = nullptr;
 }
 
-void LVConvertParameter(const svm_parameter *param_in, LVsvm_parameter *param_out){
-	if (param_in == nullptr || param_out == nullptr)
-		return;
+void LVConvertParameter(const svm_parameter &param_in, LVsvm_parameter &param_out){
+	param_out.svm_type = param_in.svm_type;
+	param_out.kernel_type = param_in.kernel_type;
+	param_out.degree = param_in.degree;
+	param_out.gamma = param_in.gamma;
+	param_out.coef0 = param_in.coef0;
+	param_out.cache_size = param_in.cache_size;
+	param_out.eps = param_in.eps;
+	param_out.C = param_in.C;
+	param_out.nu = param_in.nu;
+	param_out.p = param_in.p;
+	param_out.shrinking = param_in.shrinking;
+	param_out.probability = param_in.probability;
 
-	param_out->svm_type = param_in->svm_type;
-	param_out->kernel_type = param_in->kernel_type;
-	param_out->degree = param_in->degree;
-	param_out->gamma = param_in->gamma;
-	param_out->coef0 = param_in->coef0;
-	param_out->cache_size = param_in->cache_size;
-	param_out->eps = param_in->eps;
-	param_out->C = param_in->C;
-	param_out->nu = param_in->nu;
-	param_out->p = param_in->p;
-	param_out->shrinking = param_in->shrinking;
-	param_out->probability = param_in->probability;
-
-	int nr_weight = param_in->nr_weight;
+	int nr_weight = param_in.nr_weight;
 	// Weights
 	if (nr_weight > 0){
-		if (param_in->weight != nullptr){
-			LVResizeNumericArrayHandle(param_out->weight, nr_weight);
-			MoveBlock(param_in->weight, (*(param_out->weight))->elt, nr_weight * sizeof(double));
-			(*(param_out->weight))->dimSize = nr_weight;
+		if (param_in.weight != nullptr){
+			LVResizeNumericArrayHandle(param_out.weight, nr_weight);
+			MoveBlock(param_in.weight, (*(param_out.weight))->elt, nr_weight * sizeof(double));
+			(*(param_out.weight))->dimSize = nr_weight;
 		}	
 
-		if (param_in->weight_label != nullptr){
+		if (param_in.weight_label != nullptr){
 			// Weight_label (number of support vectors for each class)
-			LVResizeNumericArrayHandle(param_out->weight_label, nr_weight);
-			MoveBlock(param_in->weight_label, (*(param_out->weight_label))->elt, nr_weight * sizeof(int32_t));
-			(*(param_out->weight_label))->dimSize = nr_weight;
+			LVResizeNumericArrayHandle(param_out.weight_label, nr_weight);
+			MoveBlock(param_in.weight_label, (*(param_out.weight_label))->elt, nr_weight * sizeof(int32_t));
+			(*(param_out.weight_label))->dimSize = nr_weight;
 		}
 	}
 }
@@ -460,7 +425,7 @@ void LVConvertModel(const svm_model *model_in, LVsvm_model *model_out){
 	if (model_in == nullptr)
 		return;
 
-	LVConvertParameter(&model_in->param, &model_out->param);
+	LVConvertParameter(model_in->param, model_out->param);
 
 	// Convert svm_model to LVsvm_model
 	model_out->nr_class = model_in->nr_class;
@@ -518,7 +483,7 @@ void LVConvertModel(const svm_model *model_in, LVsvm_model *model_out){
 		MoveBlock(model_in->sv_indices, (*(model_out->sv_indices))->elt, l * sizeof(int32_t));
 		(*model_out->sv_indices)->dimSize = l;
 	}
-
+	
 	// SV (support vectors) - total_sv (l) outer dim, variable inner dim
 	if (model_in->SV != nullptr){
 		LVResizeHandleArrayHandle(model_out->SV, l);
@@ -538,14 +503,29 @@ void LVConvertModel(const svm_model *model_in, LVsvm_model *model_out){
 				}
 
 				LVResizeCompositeArrayHandle((*(model_out->SV))->elt[i], n_nodes);
+				
+				/*
+				LVsvm_node node = { 0 };
+				node.index = 1;
+				node.value = 2.0;
+				(*(*(model_out->SV))->elt[i])->elt[0] = node;
+				*/
 
 				// Copy data over
-				MoveBlock(model_in->SV[i], (*(*(model_out->SV))->elt[i])->elt, sizeof(svm_node)*n_nodes);
+				MoveBlock(model_in->SV[i], (*(*(model_out->SV))->elt[i])->elt, sizeof(LVsvm_node)*(n_nodes));
 				(*(*(model_out->SV))->elt[i])->dimSize = static_cast<uint32_t>(n_nodes);
+			}
+			else {
+				if ((*(model_out->SV))->elt[i] != nullptr)
+					(*(*(model_out->SV))->elt[i])->dimSize = 0;
 			}
 		}
 
 		(*(model_out->SV))->dimSize = l;
+	}
+	else{
+		if(*(model_out->SV) != nullptr)
+			(*(model_out->SV))->dimSize = 0;
 	}
 
 	// sv_coef
@@ -558,6 +538,38 @@ void LVConvertModel(const svm_model *model_in, LVsvm_model *model_out){
 		(*(model_out->sv_coef))->dimSize[0] = nr_class - 1;
 		(*(model_out->sv_coef))->dimSize[1] = l;
 	}
+}
+
+//-- Print function (console logging)
+void LVsvm_print_function(const char * message){
+	LVUserEventRef *usrEv = loggingUsrEv;
+	if (usrEv != nullptr && message != nullptr){
+		// Filter out the progress messages (..... and *)
+		if (strcmp(message, ".") != 0 && strcmp(message, "*") != 0){
+			// Move the string to a handle
+			size_t length = strlen(message);
+			LStrHandle lvmsg = (LStrHandle)DSNewHandle(sizeof(int32_t) + length);
+			MoveBlock(message, (*lvmsg)->str, length);
+			(*lvmsg)->cnt = static_cast<int32>(length);
+
+			// Post the string to the user event
+			PostLVUserEvent(*usrEv, &lvmsg);
+		}
+	}
+}
+
+void LVsvm_set_logging_userevent(lvError *lvErr, LVUserEventRef *loggingUserEvent_in) {
+	loggingUsrEv = loggingUserEvent_in;
+	svm_set_print_string_function(LVsvm_print_function);
+}
+
+void LVsvm_get_logging_userevent(lvError *lvErr, LVUserEventRef *loggingUserEvent_out) {
+	loggingUserEvent_out = loggingUsrEv;
+}
+
+void LVsvm_delete_logging_userevent(lvError *lvErr, LVUserEventRef *loggingUserEvent_out) {
+	loggingUserEvent_out = loggingUsrEv;
+	loggingUsrEv = nullptr;
 }
 
 

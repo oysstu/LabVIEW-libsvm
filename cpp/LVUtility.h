@@ -125,15 +125,16 @@ void LVResizeNumericArrayHandle(LVArray_Hdl<T, dim> &handle, size_t newSize) {
 /// Does not update the dimSize parameter.
 /// Use ResizeNumericArray or LVResizeNumericArray for arrays of plain data.
 /// The cluster/struct in question should have been declared with the correct alignment.
+/// New memory is not initialized to zero.
 ///	</summary>
 /// <param name='handle'>The array handle.</param>
 /// <param name='newSize'>The new number of elements in the outer array.</param>
 template<class T, int dim>
 void LVResizeCompositeArrayHandle(LVArray_Hdl<T, dim> &handle, size_t newSize){
 	// Taking the sizeof the entire array cluster automatically accounts for padding on 64-bit LabVIEW
-	size_t sizeReq = sizeof(LVArray<T, dim>) + (newSize - 1)*sizeof(T);
+	size_t sizeReq = sizeof(LVArray<T, dim>) + sizeof(T)*(newSize - 1);
 
-	if (DSCheckHandle(handle) != noErr){
+	if (handle == nullptr || DSCheckHandle(handle) != noErr){
 		handle = reinterpret_cast<LVArray_Hdl<T, dim>>(DSNewHandle(sizeReq));
 		if (handle == NULL)
 			throw LVException(__FILE__, __LINE__, "Unable to create new handle (out of memory?).");
@@ -155,6 +156,7 @@ void LVResizeCompositeArrayHandle(LVArray_Hdl<T, dim> &handle, size_t newSize){
 /// Valid handles are not created for new elements.
 /// Does not update the dimSize parameter.
 /// Use LVResizeNumericArray for arrays of plain data.
+/// New memory allocated is initialized to zero to avoid being interpreted as valid handles.
 ///	</summary>
 /// <param name='handle'>The outer array handle.</param>
 /// <param name='newSize'>The new number of elements in the outer array.</param>
@@ -164,8 +166,9 @@ void LVResizeHandleArrayHandle(LVArray_Hdl<LVArray_Hdl<T, dim2>, dim1> &handle, 
 	size_t sizeReq = sizeof(LVArray<LVArray_Hdl<T, dim2>, dim1>) + sizeof(LVArray_Hdl<T, dim2>)*(newSize - 1);
 
 	// Create new handle if current handle is not valid, else deallocate overshooting handles
-	if (DSCheckHandle(handle) != noErr){
-		handle = reinterpret_cast<LVArray_Hdl<LVArray_Hdl<T, dim2>, dim1>>(DSNewHandle(sizeReq));
+	if (handle == nullptr || DSCheckHandle(handle) != noErr){
+		// Allocate cleared memory, so that it not interpreted as a valid handle.
+		handle = reinterpret_cast<LVArray_Hdl<LVArray_Hdl<T, dim2>, dim1>>(DSNewHClr(sizeReq));
 		if (handle == NULL){
 			throw LVException(__FILE__, __LINE__, "Failed to allocate new handle (out of memory?)");
 		}
@@ -173,12 +176,11 @@ void LVResizeHandleArrayHandle(LVArray_Hdl<LVArray_Hdl<T, dim2>, dim1> &handle, 
 	else {
 		size_t hdlSize = DSGetHandleSize(handle);
 		// Don't change handle size if it is already the requested size
-		if (hdlSize != sizeReq){
+		if (hdlSize < sizeReq){
 			// Deallocate valid handles that exceed the new size
-			if (hdlSize > sizeReq){
-				size_t hdlCount = (hdlSize - sizeof(uint32_t)*dim1) / sizeof(LVArray_Hdl<T, dim2>);
-				for (size_t i = hdlCount; i > newSize; i--){
-					if (DSCheckHandle((*handle)->elt[i]) == noErr){
+			if ((*handle)->dimSize > newSize){
+				for (size_t i = (*handle)->dimSize - 1; i > newSize - 1; i--){
+					if ((*handle)->elt[i] != nullptr && DSCheckHandle((*handle)->elt[i]) == noErr){
 						MgErr err = DSDisposeHandle((*handle)->elt[i]);
 						if (err != noErr)
 							throw LVException(__FILE__, __LINE__, "Failed to deallocate overshooting handle when resizing array.");
@@ -186,7 +188,9 @@ void LVResizeHandleArrayHandle(LVArray_Hdl<LVArray_Hdl<T, dim2>, dim1> &handle, 
 				}
 			}
 
-			MgErr err = DSSetHandleSize(handle, sizeReq);
+			// Allocate cleared memory, so that it not interpreted as a valid handle.
+			MgErr err = DSSetHSzClr(handle, sizeReq);
+
 			if (err != noErr)
 				throw LVException(__FILE__, __LINE__, "Failed to change handle size (out of memory?)");
 		}
