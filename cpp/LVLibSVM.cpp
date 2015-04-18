@@ -503,14 +503,7 @@ void LVConvertModel(const svm_model *model_in, LVsvm_model *model_out){
 				}
 
 				LVResizeCompositeArrayHandle((*(model_out->SV))->elt[i], n_nodes);
-				
-				/*
-				LVsvm_node node = { 0 };
-				node.index = 1;
-				node.value = 2.0;
-				(*(*(model_out->SV))->elt[i])->elt[0] = node;
-				*/
-
+			
 				// Copy data over
 				MoveBlock(model_in->SV[i], (*(*(model_out->SV))->elt[i])->elt, sizeof(LVsvm_node)*(n_nodes));
 				(*(*(model_out->SV))->elt[i])->dimSize = static_cast<uint32_t>(n_nodes);
