@@ -8,7 +8,7 @@ Although there exists an old wrapper for libsvm, it uses the (now) unsupported C
 This implementation uses Call Library Function Nodes, and passes data directly.
 
 ### Installation
-The easiest way to install the library is through the pre-built VIPM package.
+The easiest way to install the library is through the pre-built VIPM package found under releases.
 This installs both the VIs and binary components to vi.lib. 
 Currently the only supported system is windows, but unix support will be added at a later point.
 
