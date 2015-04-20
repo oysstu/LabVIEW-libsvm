@@ -23,7 +23,7 @@ Let me know if you would like me to extend support for previous versions.
 
 
 ### Usage
-Currently there are only two examples. 
+Currently there are three examples included in the palette.
 Look at the libsvm/liblinear documentation if something should be unclear. 
 The documentation for the python wrapper in scikit-learn is also very useful.
 
