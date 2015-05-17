@@ -4,8 +4,9 @@
 A LabVIEW wrapper for libsvm (320). An interface to liblinear (1.19) is also included.
 The wrapper can currently be considered experimental, as it has not been extensively tested.
 
-Although there exists an old wrapper for libsvm, it uses the (now) unsupported CIN interface and passes data through text files.
-This implementation uses Call Library Function Nodes, and passes data directly.
+Although there exists an old wrapper for libsvm, it uses the (now) unsupported CIN interface and passes data through text files. This implementation uses Call Library Function Nodes, and passes data directly.
+
+The implementation is thread-safe, which means that multiple cross-validation/training/predicting can be executed simultaneously. This can for example be done quick and dirty by placing the VIs in a parallel for loop.
 
 ### Installation
 The easiest way to install the library is through the pre-built VIPM package found under releases.
