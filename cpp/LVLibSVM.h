@@ -57,11 +57,11 @@ struct LVsvm_parameter {
 
 struct LVsvm_model {
 	LVsvm_parameter param;
-	int32_t nr_class;							// Number of classes
-	int32_t l;									// Number of support vectors
+	int32_t nr_class;				// Number of classes
+	int32_t l;					// Number of support vectors
 	LVArray_Hdl<LVArray_Hdl<LVsvm_node>> SV;	// Support vectors
-	LVArray_Hdl<double, 2> sv_coef;				// Support vector coefficients ((nr_classes-1) X SV count)
-	LVArray_Hdl<double> rho;					// Bias term
+	LVArray_Hdl<double, 2> sv_coef;			// Support vector coefficients ((nr_classes-1) X SV count)
+	LVArray_Hdl<double> rho;			// Bias term
 	LVArray_Hdl<double> probA;
 	LVArray_Hdl<double> probB;
 	LVArray_Hdl<int32_t> sv_indices;
@@ -71,9 +71,11 @@ struct LVsvm_model {
 
 #include "lv_epilog.h"
 
-// Compile-time size checks
+//
+//-- Compile-time size checks
+//
 
-// Check that padding matches that of LVsvm_node (TODO: Check x86)
+// Check that padding matches that of LVsvm_node
 static_assert (sizeof(LVsvm_node) == sizeof(svm_node), "Size of LVSvm_node does not match svm_node.");
 
 // Check that padding is not inserted in between the two-dimensional sparse arrays used
@@ -84,7 +86,9 @@ static_assert (sizeof(LVArray_Hdl<LVsvm_node>) == sizeof(_LVsvm_one_element_clus
 
 #pragma endregion
 
+//
 //-- Static variables
+//
 
 // User event reference used to return libsvm console logging to LabVIEW
 // Atomic because the library is set to be multithreaded to avoid hogging the UI thread for calculations
@@ -99,7 +103,7 @@ static std::atomic<LVUserEventRef *> loggingUsrEv(nullptr);
 #define LVLIBSVM_API extern "C" __declspec(dllexport)
 #define CALLCONV __cdecl
 
-LVLIBSVM_API int32_t	CALLCONV GetLibSVMVersion() { return LIBSVM_VERSION; }
+LVLIBSVM_API int32_t		CALLCONV GetLibSVMVersion() { return LIBSVM_VERSION; }
 
 LVLIBSVM_API void		CALLCONV LVsvm_train(lvError *lvErr, const LVsvm_problem *prob_in, const LVsvm_parameter *param_in, LVsvm_model * model_out);
 
@@ -111,19 +115,27 @@ LVLIBSVM_API double		CALLCONV LVsvm_predict_values(lvError *lvErr, const LVsvm_m
 
 LVLIBSVM_API double		CALLCONV LVsvm_predict_probability(lvError *lvErr, const LVsvm_model *model_in, const LVArray_Hdl<LVsvm_node> x_in, LVArray_Hdl<double> prob_estimates_out);
 
+//
 //-- File operations
-// File saving/loading should be done through LabVIEW API, these are included for interoperability
+//
+
+// File saving/loading should be done through the LabVIEW API, these are included for interoperability
 LVLIBSVM_API void		CALLCONV LVsvm_save_model(lvError *lvErr, const char *path_in, const LVsvm_model *model_in);
 LVLIBSVM_API void		CALLCONV LVsvm_load_model(lvError *lvErr, const char *path_in, LVsvm_model *model_out);
 
+//
 //-- Print function (used for console output redirection to LabVIEW)
+//
+
 // Logging is global for now
 void LVsvm_print_function(const char * message);
 LVLIBSVM_API void CALLCONV LVsvm_set_logging_userevent(lvError *lvErr, LVUserEventRef *loggingUserEvent_in);
 LVLIBSVM_API void CALLCONV LVsvm_get_logging_userevent(lvError *lvErr, LVUserEventRef *loggingUserEvent_out);
 LVLIBSVM_API void CALLCONV LVsvm_delete_logging_userevent(lvError *lvErr, LVUserEventRef *loggingUserEvent_out);
 
+//
 //-- Helper functions
+//
 
 // Assigns the cluster from LabVIEW to a svm_parameter struct
 void LVConvertParameter(const LVsvm_parameter *param_in, svm_parameter *param_out);
