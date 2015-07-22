@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "LVLibLinear.h"
 
 #include <stdint.h>
@@ -6,7 +5,6 @@
 #include <string>
 #include <memory>
 #include <extcode.h>
-#include <svm.h>
 
 #include "LVTypeDecl.h"
 #include "LVUtility.h"

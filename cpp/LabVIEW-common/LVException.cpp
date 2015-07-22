@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "LVException.h"
 
 #include <iostream>

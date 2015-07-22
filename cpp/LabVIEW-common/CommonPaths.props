@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <LABVIEW64_PATH>C:\Program Files\National Instruments\LabVIEW 2014</LABVIEW64_PATH>
+    <LABVIEW32_PATH>C:\Program Files (x86)\National Instruments\LabVIEW 2014</LABVIEW32_PATH>
+    <TARGET_DIR>$(SolutionDir)\..\LabVIEW\bin\</TARGET_DIR>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup />
+  <ItemGroup>
+    <BuildMacro Include="LABVIEW64_PATH">
+      <Value>$(LABVIEW64_PATH)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="LABVIEW32_PATH">
+      <Value>$(LABVIEW32_PATH)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="TARGET_DIR">
+      <Value>$(TARGET_DIR)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

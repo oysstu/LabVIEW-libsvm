@@ -8,7 +8,6 @@
 #ifndef LVEXCEPTION_H_
 #define LVEXCEPTION_H_
 
-#include "stdafx.h"
 #include <stdexcept>
 #include <extcode.h>
 

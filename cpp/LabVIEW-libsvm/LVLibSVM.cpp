@@ -1,11 +1,9 @@
-#include "stdafx.h"
 #include "LVLibSVM.h"
 
 #include <stdint.h>
 #include <exception>
 #include <string>
 #include <memory>
-#include <extcode.h>
 #include <svm.h>
 #include <errno.h>
 

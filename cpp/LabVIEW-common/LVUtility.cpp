@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "LVUtility.h"
 #include "LVTypeDecl.h"
 #include "LVException.h"
