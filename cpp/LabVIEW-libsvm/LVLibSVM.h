@@ -69,7 +69,7 @@ struct LVsvm_model {
 	LVArray_Hdl<int32_t> nSV;
 };
 
-#include "lv_epilog.h"
+
 
 // Compile-time size checks
 
@@ -81,6 +81,8 @@ struct _LVsvm_one_element_cluster {
 	LVArray_Hdl<LVsvm_node> ClusterArr;
 };
 static_assert (sizeof(LVArray_Hdl<LVsvm_node>) == sizeof(_LVsvm_one_element_cluster), "Byte packing in one-element cluster present");
+
+#include "lv_epilog.h"
 
 #pragma endregion
 
