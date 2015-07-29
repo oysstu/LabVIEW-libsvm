@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.22823.1
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LabVIEW-liblinear", "LabVIEW-liblinear\LabVIEW-liblinear.vcxproj", "{5E83C1C9-AF79-4E83-BDE1-B6666B8D45C7}"
 EndProject
@@ -11,7 +11,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LabVIEW-libsvm", "LabVIEW-l
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LabVIEW-common", "LabVIEW-common\LabVIEW-common.vcxproj", "{DB2DFDA1-CC14-460C-9B60-D3F8253F4ABD}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LabVIEW-libsvm-GPU", "LabVIEW-libsvm-GPU\LabVIEW-libsvm-GPU.vcxproj", "{06823B6F-BC29-4A84-ACF8-57D1C6E0FEB0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LabVIEW-libsvm-CUDA", "LabVIEW-libsvm-GPU\LabVIEW-libsvm-GPU.vcxproj", "{06823B6F-BC29-4A84-ACF8-57D1C6E0FEB0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,13 +49,14 @@ Global
 		{DB2DFDA1-CC14-460C-9B60-D3F8253F4ABD}.Debug|x64.ActiveCfg = Debug|Win32
 		{DB2DFDA1-CC14-460C-9B60-D3F8253F4ABD}.Release|Win32.ActiveCfg = Release|Win32
 		{DB2DFDA1-CC14-460C-9B60-D3F8253F4ABD}.Release|Win32.Build.0 = Release|Win32
-		{DB2DFDA1-CC14-460C-9B60-D3F8253F4ABD}.Release|x64.ActiveCfg = Release|Win32
+		{DB2DFDA1-CC14-460C-9B60-D3F8253F4ABD}.Release|x64.ActiveCfg = Release|x64
 		{06823B6F-BC29-4A84-ACF8-57D1C6E0FEB0}.Debug|Win32.ActiveCfg = Debug|Win32
 		{06823B6F-BC29-4A84-ACF8-57D1C6E0FEB0}.Debug|Win32.Build.0 = Debug|Win32
 		{06823B6F-BC29-4A84-ACF8-57D1C6E0FEB0}.Debug|x64.ActiveCfg = Debug|Win32
 		{06823B6F-BC29-4A84-ACF8-57D1C6E0FEB0}.Release|Win32.ActiveCfg = Release|Win32
 		{06823B6F-BC29-4A84-ACF8-57D1C6E0FEB0}.Release|Win32.Build.0 = Release|Win32
-		{06823B6F-BC29-4A84-ACF8-57D1C6E0FEB0}.Release|x64.ActiveCfg = Release|Win32
+		{06823B6F-BC29-4A84-ACF8-57D1C6E0FEB0}.Release|x64.ActiveCfg = Release|x64
+		{06823B6F-BC29-4A84-ACF8-57D1C6E0FEB0}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
