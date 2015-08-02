@@ -10,19 +10,13 @@
 		<Property Name="server.vi.callsEnabled" Type="Bool">true</Property>
 		<Property Name="server.vi.propertiesEnabled" Type="Bool">true</Property>
 		<Property Name="specify.custom.address" Type="Bool">false</Property>
-		<Item Name="Controls" Type="Folder" URL="../Controls">
+		<Item Name="Liblinear" Type="Folder" URL="../Liblinear">
 			<Property Name="NI.DISK" Type="Bool">true</Property>
 		</Item>
-		<Item Name="Examples" Type="Folder" URL="../Examples">
+		<Item Name="LibSVM Dense" Type="Folder" URL="../LibSVM Dense">
 			<Property Name="NI.DISK" Type="Bool">true</Property>
 		</Item>
-		<Item Name="Liblinear Wrapper" Type="Folder" URL="../Liblinear Wrapper">
-			<Property Name="NI.DISK" Type="Bool">true</Property>
-		</Item>
-		<Item Name="Libsvm Wrapper" Type="Folder" URL="../Libsvm Wrapper">
-			<Property Name="NI.DISK" Type="Bool">true</Property>
-		</Item>
-		<Item Name="Logger" Type="Folder" URL="../Logger">
+		<Item Name="LibSVM Sparse" Type="Folder" URL="../LibSVM Sparse">
 			<Property Name="NI.DISK" Type="Bool">true</Property>
 		</Item>
 		<Item Name="SubVIs" Type="Folder" URL="../SubVIs">
@@ -31,9 +25,6 @@
 		<Item Name="Tools" Type="Folder" URL="../Tools">
 			<Property Name="NI.DISK" Type="Bool">true</Property>
 		</Item>
-		<Item Name="LibSVM Cross-Validate.vi" Type="VI" URL="../LibSVM Cross-Validate.vi"/>
-		<Item Name="LibSVM Predict.vi" Type="VI" URL="../LibSVM Predict.vi"/>
-		<Item Name="LibSVM Train.vi" Type="VI" URL="../LibSVM Train.vi"/>
 		<Item Name="Read Problem.vi" Type="VI" URL="../Read Problem.vi"/>
 		<Item Name="Write Problem.vi" Type="VI" URL="../Write Problem.vi"/>
 		<Item Name="Dependencies" Type="Dependencies">
@@ -83,7 +74,6 @@
 				<Item Name="GetRTHostConnectedProp.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/GetRTHostConnectedProp.vi"/>
 				<Item Name="Longest Line Length in Pixels.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Longest Line Length in Pixels.vi"/>
 				<Item Name="LVBoundsTypeDef.ctl" Type="VI" URL="/&lt;vilib&gt;/Utility/miscctls.llb/LVBoundsTypeDef.ctl"/>
-				<Item Name="LVLibSVM.dll" Type="Document" URL="/&lt;vilib&gt;/oysstu/LVLibSVM/bin/x64/LVLibSVM.dll"/>
 				<Item Name="LVRectTypeDef.ctl" Type="VI" URL="/&lt;vilib&gt;/Utility/miscctls.llb/LVRectTypeDef.ctl"/>
 				<Item Name="NI_FileType.lvlib" Type="Library" URL="/&lt;vilib&gt;/Utility/lvfile.llb/NI_FileType.lvlib"/>
 				<Item Name="NI_PackedLibraryUtility.lvlib" Type="Library" URL="/&lt;vilib&gt;/Utility/LVLibp/NI_PackedLibraryUtility.lvlib"/>
@@ -107,7 +97,8 @@
 				<Item Name="Trim Whitespace.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Trim Whitespace.vi"/>
 				<Item Name="whitespace.ctl" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/whitespace.ctl"/>
 			</Item>
-			<Item Name="LVLibSVM.dll" Type="Document" URL="../bin/x64/LVLibSVM.dll"/>
+			<Item Name="LabVIEW-liblinear.dll" Type="Document" URL="../bin/x64/LabVIEW-liblinear.dll"/>
+			<Item Name="LabVIEW-libsvm.dll" Type="Document" URL="../bin/x64/LabVIEW-libsvm.dll"/>
 		</Item>
 		<Item Name="Build Specifications" Type="Build"/>
 	</Item>
