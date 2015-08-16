@@ -13,6 +13,10 @@
 
 void LVsvm_train(lvError *lvErr, const LVsvm_problem *prob_in, const LVsvm_parameter *param_in, LVsvm_model * model_out){
 	try{
+		// Input verification: Nonempty problem
+		if (prob_in->x == nullptr || (*(prob_in->x))->dimSize == 0)
+			throw LVException(__FILE__, __LINE__, "Empty problem passed to libsvm-train.");
+
 		// Input verification: Problem dimensions
 		if ((*(prob_in->x))->dimSize != (*(prob_in->y))->dimSize)
 			throw LVException(__FILE__, __LINE__, "The problem must have an equal number of labels and feature vectors (x and y).");
@@ -98,6 +102,10 @@ void LVsvm_train(lvError *lvErr, const LVsvm_problem *prob_in, const LVsvm_param
 
 void LVsvm_cross_validation(lvError *lvErr, const LVsvm_problem *prob_in, const LVsvm_parameter *param_in, int32_t nr_fold, LVArray_Hdl<double> target_out){
 	try{
+		// Input verification: Nonempty problem
+		if (prob_in->x == nullptr || (*(prob_in->x))->dimSize == 0)
+			throw LVException(__FILE__, __LINE__, "Empty problem passed to libsvm-crossvalidation.");
+
 		// Input verification: Problem dimensions
 		if ((*(prob_in->x))->dimSize != (*(prob_in->y))->dimSize)
 			throw LVException(__FILE__, __LINE__, "The problem must have an equal number of labels and feature vectors (x and y).");
@@ -152,6 +160,10 @@ void LVsvm_cross_validation(lvError *lvErr, const LVsvm_problem *prob_in, const 
 
 double	LVsvm_predict(lvError *lvErr, const struct LVsvm_model *model_in, const LVArray_Hdl<LVsvm_node> x_in){
 	try{
+		// Input verification: Nonempty problem
+		if (x_in == nullptr || (*x_in)->dimSize == 0)
+			throw LVException(__FILE__, __LINE__, "Empty feature vector passed to libsvm-predict.");
+
 		// Convert LVsvm_model to svm_model
 		std::unique_ptr<svm_model> model(new svm_model);
 		std::unique_ptr<svm_node*[]> SV;
@@ -224,6 +236,10 @@ double	LVsvm_predict_values(lvError *lvErr, const LVsvm_model *model_in, const L
 
 double	LVsvm_predict_probability(lvError *lvErr, const LVsvm_model *model_in, const LVArray_Hdl<LVsvm_node> x_in, LVArray_Hdl<double> prob_estimates_out){
 	try{
+		// Input verification: Nonempty problem
+		if (x_in == nullptr || (*x_in)->dimSize == 0)
+			throw LVException(__FILE__, __LINE__, "Empty feature vector passed to libsvm-predict.");
+
 		// Convert LVsvm_model to svm_model
 		std::unique_ptr<svm_model> model(new svm_model);
 		std::unique_ptr<svm_node*[]> SV;
