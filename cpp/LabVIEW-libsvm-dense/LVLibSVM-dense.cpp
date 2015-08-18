@@ -375,6 +375,10 @@ void LVConvertParameter(const svm_parameter &param_in, LVsvm_parameter &param_ou
 }
 
 void LVConvertModel(const LVsvm_model *model_in, svm_model *model_out, std::unique_ptr<svm_node[]> &SV, std::unique_ptr<double*[]> &sv_coef) {
+	// Input verification: Reject uninitialized models from LabVIEW
+	if (model_in->l <= 0 || model_in->nSV == nullptr || (*model_in->nSV)->dimSize == 0 || model_in->SV == nullptr || (*model_in->SV)->dimSize == 0)
+		throw LVException(__FILE__, __LINE__, "Uninitialized model passed to libsvm.");
+	
 	// Assign the parameters
 	LVConvertParameter(&model_in->param, &model_out->param);
 
