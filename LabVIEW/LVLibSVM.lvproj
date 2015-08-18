@@ -19,9 +19,7 @@
 		<Item Name="LibSVM Sparse" Type="Folder" URL="../LibSVM Sparse">
 			<Property Name="NI.DISK" Type="Bool">true</Property>
 		</Item>
-		<Item Name="SubVIs" Type="Folder" URL="../SubVIs">
-			<Property Name="NI.DISK" Type="Bool">true</Property>
-		</Item>
+		<Item Name="SubVIs" Type="Folder"/>
 		<Item Name="Tools" Type="Folder" URL="../Tools">
 			<Property Name="NI.DISK" Type="Bool">true</Property>
 		</Item>
@@ -98,6 +96,7 @@
 				<Item Name="whitespace.ctl" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/whitespace.ctl"/>
 			</Item>
 			<Item Name="LabVIEW-liblinear.dll" Type="Document" URL="../bin/x64/LabVIEW-liblinear.dll"/>
+			<Item Name="LabVIEW-libsvm-dense.dll" Type="Document" URL="../bin/x64/LabVIEW-libsvm-dense.dll"/>
 			<Item Name="LabVIEW-libsvm.dll" Type="Document" URL="../bin/x64/LabVIEW-libsvm.dll"/>
 		</Item>
 		<Item Name="Build Specifications" Type="Build"/>
