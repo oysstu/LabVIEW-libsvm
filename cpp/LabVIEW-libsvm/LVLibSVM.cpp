@@ -22,13 +22,13 @@ void LVsvm_train(lvError *lvErr, const LVsvm_problem *prob_in, const LVsvm_param
 			throw LVException(__FILE__, __LINE__, "The problem must have an equal number of labels and feature vectors (x and y).");
 
 		// Convert LVsvm_problem to svm_problem
-		std::unique_ptr<svm_problem> prob(new svm_problem);
+		auto prob = std::make_unique<svm_problem>();
 		uint32_t nr_nodes = (*(prob_in->y))->dimSize;
 		prob->l = nr_nodes;
 		prob->y = (*(prob_in->y))->elt;
 
 		// Create and array of pointers (sparse datastructure)
-		std::unique_ptr<svm_node*[]> x(new svm_node*[nr_nodes]);
+		auto x = std::make_unique<svm_node*[]>(nr_nodes);
 		prob->x = x.get();
 
 		auto x_in = prob_in->x;
@@ -39,7 +39,7 @@ void LVsvm_train(lvError *lvErr, const LVsvm_problem *prob_in, const LVsvm_param
 		}
 
 		// Assign parameters to svm_parameter
-		std::unique_ptr<svm_parameter> param(new svm_parameter());
+		auto param = std::make_unique<svm_parameter>();
 		LVConvertParameter(param_in, param.get());
 
 		// Verify parameters
@@ -111,13 +111,13 @@ void LVsvm_cross_validation(lvError *lvErr, const LVsvm_problem *prob_in, const 
 			throw LVException(__FILE__, __LINE__, "The problem must have an equal number of labels and feature vectors (x and y).");
 
 		// Convert LVsvm_problem to svm_problem
-		std::unique_ptr<svm_problem> prob(new svm_problem);
+		auto prob = std::make_unique<svm_problem>();
 		int32_t nr_nodes = (*(prob_in->y))->dimSize;
 		prob->l = nr_nodes; // The number of nodes
 		prob->y = (*(prob_in->y))->elt;
 
 		// Create and array of pointers (sparse datastructure)
-		std::unique_ptr<svm_node*[]> x(new svm_node*[nr_nodes]);
+		auto x = std::make_unique<svm_node*[]>(nr_nodes);
 		prob->x = x.get();
 
 		auto x_in = prob_in->x;
@@ -128,7 +128,7 @@ void LVsvm_cross_validation(lvError *lvErr, const LVsvm_problem *prob_in, const 
 		}
 
 		// Assign parameters to svm_parameter
-		std::unique_ptr<svm_parameter> param(new svm_parameter());
+		auto param = std::make_unique<svm_parameter>();
 		LVConvertParameter(param_in, param.get());
 
 		// Verify parameters
@@ -165,7 +165,7 @@ double	LVsvm_predict(lvError *lvErr, const struct LVsvm_model *model_in, const L
 			throw LVException(__FILE__, __LINE__, "Empty feature vector passed to libsvm-predict.");
 
 		// Convert LVsvm_model to svm_model
-		std::unique_ptr<svm_model> model(new svm_model);
+		auto model = std::make_unique<svm_model>();
 		std::unique_ptr<svm_node*[]> SV;
 		std::unique_ptr<double*[]> sv_coef;
 		LVConvertModel(model_in, model.get(), SV, sv_coef);
@@ -193,7 +193,7 @@ double	LVsvm_predict(lvError *lvErr, const struct LVsvm_model *model_in, const L
 double	LVsvm_predict_values(lvError *lvErr, const LVsvm_model *model_in, const LVArray_Hdl<LVsvm_node> x_in, LVArray_Hdl<double> dec_values_out){
 	try{
 		// Convert LVsvm_model to svm_model
-		std::unique_ptr<svm_model> model(new svm_model);
+		auto model = std::make_unique<svm_model>();
 		std::unique_ptr<svm_node*[]> SV;
 		std::unique_ptr<double*[]> sv_coef;
 		LVConvertModel(model_in, model.get(), SV, sv_coef);
@@ -241,7 +241,7 @@ double	LVsvm_predict_probability(lvError *lvErr, const LVsvm_model *model_in, co
 			throw LVException(__FILE__, __LINE__, "Empty feature vector passed to libsvm-predict.");
 
 		// Convert LVsvm_model to svm_model
-		std::unique_ptr<svm_model> model(new svm_model);
+		auto model = std::make_unique<svm_model>();
 		std::unique_ptr<svm_node*[]> SV;
 		std::unique_ptr<double*[]> sv_coef;
 		LVConvertModel(model_in, model.get(), SV, sv_coef);
@@ -414,7 +414,7 @@ void LVConvertModel(const LVsvm_model *model_in, svm_model *model_out, std::uniq
 	// SV
 	if ((*(model_in->SV))->dimSize > 0){
 		uint32_t nSV_in = (*(model_in->SV))->dimSize;
-		SV = std::unique_ptr<svm_node*[]>(new svm_node*[nSV_in]);
+		SV = std::make_unique<svm_node*[]>(nSV_in);
 		for (uint32_t i = 0; i < nSV_in; i++){
 			SV[i] = reinterpret_cast<svm_node*>((*(*(model_in->SV))->elt[i])->elt);
 		}
@@ -427,7 +427,7 @@ void LVConvertModel(const LVsvm_model *model_in, svm_model *model_out, std::uniq
 	// sv_coef
 	if ((*(model_in->sv_coef))->dimSize > 0){
 		uint32_t *nsv_coef = (*(model_in->sv_coef))->dimSize;
-		sv_coef = std::unique_ptr<double*[]>(new double*[nsv_coef[0]]);
+		sv_coef = std::make_unique<double*[]>(nsv_coef[0]);
 		for (uint32_t i = 0; i < nsv_coef[0]; i++){
 			sv_coef[i] = &(*(model_in->sv_coef))->elt[i * nsv_coef[1]];
 		}
@@ -591,7 +591,7 @@ void LVsvm_delete_logging_userevent(lvError *lvErr, LVUserEventRef *loggingUserE
 void LVsvm_save_model(lvError *lvErr, const char *path_in, const LVsvm_model *model_in){
 	try{
 		// Convert LVsvm_model to svm_model
-		std::unique_ptr<svm_model> model(new svm_model);
+		auto model = std::make_unique<svm_model>();
 		std::unique_ptr<svm_node*[]> SV;
 		std::unique_ptr<double*[]> sv_coef;
 		LVConvertModel(model_in, model.get(), SV, sv_coef);

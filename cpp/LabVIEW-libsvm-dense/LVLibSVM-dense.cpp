@@ -210,7 +210,7 @@ double	LVsvm_predict(lvError *lvErr, const struct LVsvm_model *model_in, const L
 double	LVsvm_predict_values(lvError *lvErr, const LVsvm_model *model_in, const LVArray_Hdl<double> x_in, LVArray_Hdl<double> dec_values_out) {
 	try {
 		// Convert LVsvm_model to svm_model
-		std::unique_ptr<svm_model> model(new svm_model);
+		auto model = std::make_unique<svm_model>();
 		std::unique_ptr<svm_node[]> SV;
 		std::unique_ptr<double*[]> sv_coef;
 		LVConvertModel(model_in, model.get(), SV, sv_coef);
@@ -444,7 +444,7 @@ void LVConvertModel(const LVsvm_model *model_in, svm_model *model_out, std::uniq
 	// sv_coef
 	if ((*(model_in->sv_coef))->dimSize > 0) {
 		uint32_t *nsv_coef = (*(model_in->sv_coef))->dimSize;
-		sv_coef = std::unique_ptr<double*[]>(new double*[nsv_coef[0]]);
+		sv_coef = std::make_unique<double*[]>(nsv_coef[0]);
 		for (uint32_t i = 0; i < nsv_coef[0]; i++) {
 			sv_coef[i] = &(*(model_in->sv_coef))->elt[i * nsv_coef[1]];
 		}

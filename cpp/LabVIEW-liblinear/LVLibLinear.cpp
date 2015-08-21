@@ -17,13 +17,13 @@ void LVlinear_train(lvError *lvErr, const LVlinear_problem *prob_in, const LVlin
 			throw LVException(__FILE__, __LINE__, "The problem must have an equal number of labels and feature vectors (x and y).");
 
 		//-- Convert problem
-		std::unique_ptr<problem> prob(new problem);
+		auto prob = std::make_unique<problem>();
 		uint32_t nr_nodes = (*(prob_in->y))->dimSize;
 		prob->l = nr_nodes;
 		prob->y = (*(prob_in->y))->elt;
 
 		// Create and array of pointers (sparse datastructure)
-		std::unique_ptr<feature_node*[]> x(new feature_node*[nr_nodes]);
+		auto x = std::make_unique<feature_node*[]>(nr_nodes);
 		prob->x = x.get();
 
 		auto x_in = prob_in->x;
@@ -34,7 +34,7 @@ void LVlinear_train(lvError *lvErr, const LVlinear_problem *prob_in, const LVlin
 		}
 
 		//-- Convert parameters
-		std::unique_ptr<parameter> param(new parameter());
+		auto param = std::make_unique<parameter>();
 		LVConvertParameter(param_in, param.get());
 
 		// Verify parameters
@@ -77,13 +77,13 @@ void LVlinear_cross_validation(lvError *lvErr, const LVlinear_problem *prob_in, 
 			throw LVException(__FILE__, __LINE__, "The problem must have an equal number of labels and feature vectors (x and y).");
 
 		// Convert LVsvm_problem to svm_problem
-		std::unique_ptr<problem> prob(new problem);
+		auto prob = std::make_unique<problem>();
 		uint32_t nr_nodes = (*(prob_in->y))->dimSize;
 		prob->l = nr_nodes;
 		prob->y = (*(prob_in->y))->elt;
 
 		// Create and array of pointers (sparse datastructure)
-		std::unique_ptr<feature_node*[]> x(new feature_node*[nr_nodes]);
+		auto x = std::make_unique<feature_node*[]>(nr_nodes);
 		prob->x = x.get();
 
 		auto x_in = prob_in->x;
@@ -94,7 +94,7 @@ void LVlinear_cross_validation(lvError *lvErr, const LVlinear_problem *prob_in, 
 		}
 
 		// Assign parameters to svm_parameter
-		std::unique_ptr<parameter> param(new parameter());
+		auto param = std::make_unique<parameter>();
 		LVConvertParameter(param_in, param.get());
 
 		// Verify parameters
@@ -127,10 +127,10 @@ void LVlinear_cross_validation(lvError *lvErr, const LVlinear_problem *prob_in, 
 double LVlinear_predict(lvError *lvErr, const struct LVlinear_model *model_in, const LVArray_Hdl<LVlinear_node> x_in){
 	try{
 		// Convert LVsvm_model to svm_model
-		std::unique_ptr<model> model(new model);
-		LVConvertModel(model_in, model.get());
+		auto mdl = std::make_unique<model>();
+		LVConvertModel(model_in, mdl.get());
 
-		double label = predict(model.get(), reinterpret_cast<feature_node*>((*x_in)->elt));
+		double label = predict(mdl.get(), reinterpret_cast<feature_node*>((*x_in)->elt));
 
 		return label;
 	}
@@ -153,8 +153,8 @@ double LVlinear_predict(lvError *lvErr, const struct LVlinear_model *model_in, c
 double LVlinear_predict_values(lvError *lvErr, const LVlinear_model  *model_in, const LVArray_Hdl<LVlinear_node> x_in, LVArray_Hdl<double> dec_values_out){
 	try{
 		// Convert LVsvm_model to svm_model
-		std::unique_ptr<model> model(new model);
-		LVConvertModel(model_in, model.get());
+		auto mdl = std::make_unique<model>();
+		LVConvertModel(model_in, mdl.get());
 
 		int nr_class = model_in->nr_class;
 		int solver = (model_in->param).solver_type;
@@ -174,7 +174,7 @@ double LVlinear_predict_values(lvError *lvErr, const LVlinear_model  *model_in, 
 		LVResizeNumericArrayHandle(dec_values_out, nr_dec);
 		(*dec_values_out)->dimSize = nr_dec;
 
-		double predicted_label = predict_values(model.get(), reinterpret_cast<feature_node*>((*x_in)->elt), (*dec_values_out)->elt);
+		double predicted_label = predict_values(mdl.get(), reinterpret_cast<feature_node*>((*x_in)->elt), (*dec_values_out)->elt);
 
 		return predicted_label;
 	}
@@ -200,19 +200,19 @@ double LVlinear_predict_values(lvError *lvErr, const LVlinear_model  *model_in, 
 double LVlinear_predict_probability(lvError *lvErr, const LVlinear_model  *model_in, const LVArray_Hdl<LVlinear_node> x_in, LVArray_Hdl<double> prob_estimates_out){
 	try{
 		// Convert LVsvm_model to svm_model
-		std::unique_ptr<model> model(new model);
-		LVConvertModel(model_in, model.get());
+		auto mdl = std::make_unique<model>();
+		LVConvertModel(model_in, mdl.get());
 
 		// Check probability model
-		int valid_probability = check_probability_model(model.get());
+		int valid_probability = check_probability_model(mdl.get());
 		if (!valid_probability)
 			throw LVException(__FILE__, __LINE__, "The model does not support probability output.");
 
 		// Allocate room for probability estimates
-		LVResizeNumericArrayHandle(prob_estimates_out, model->nr_class);
-		(*prob_estimates_out)->dimSize = model->nr_class;
+		LVResizeNumericArrayHandle(prob_estimates_out, mdl->nr_class);
+		(*prob_estimates_out)->dimSize = mdl->nr_class;
 
-		double highest_prob_label = predict_probability(model.get(), reinterpret_cast<feature_node*>((*x_in)->elt), (*prob_estimates_out)->elt);
+		double highest_prob_label = predict_probability(mdl.get(), reinterpret_cast<feature_node*>((*x_in)->elt), (*prob_estimates_out)->elt);
 
 		return highest_prob_label;
 	}
