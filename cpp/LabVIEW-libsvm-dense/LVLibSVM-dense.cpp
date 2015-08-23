@@ -467,8 +467,8 @@ void LVConvertModel(const svm_model *model_in, LVsvm_model *model_out) {
 	model_out->l = model_in->l;
 
 	int n_class = model_in->nr_class;				// Number of classes
-	int n_pairs = n_class*(n_class - 1) / 2;			// Total pairwise count
-	int n_SV = model_in->l;							// Total SV count
+	int n_pairs = n_class*(n_class - 1) / 2;		// Total pairwise count
+	int n_SV = model_in->l;							// Total SV count (not to be confused with the nSV member)
 
 	// Label
 	if (model_in->label != nullptr) {
@@ -508,7 +508,8 @@ void LVConvertModel(const svm_model *model_in, LVsvm_model *model_out) {
 	// nSVs (number of support vectors for each class)
 	if (model_in->nSV != nullptr) {
 		LVResizeNumericArrayHandle(model_out->nSV, n_class);
-		MoveBlock(model_in->nSV, (*(model_out->nSV))->elt, n_class * sizeof(int32_t));
+		for (int i = 0; i < n_class; i++)
+			(*(model_out->nSV))->elt[i] = model_in->nSV[i];
 		(*model_out->nSV)->dimSize = n_class;
 	}
 
@@ -526,19 +527,21 @@ void LVConvertModel(const svm_model *model_in, LVsvm_model *model_out) {
 
 		for (int i = 0; i < n_SV; i++) {
 			// Dense LabVIEW implementation does not allow for feature vectors of different size
-			if (model_in->SV[i].dim != n_features){
+			if (model_in->SV[i].dim == n_features){
+				if (model_in->SV[i].values != nullptr && model_in->SV[i].dim > 0) {
+					LVResizeNumericArrayHandle((*model_out->SV)->elt[i], n_features);
+
+					// Copy data over
+					MoveBlock(model_in->SV[i].values, (*(*model_out->SV)->elt[i])->elt, n_features*sizeof(double));
+
+					(*(*model_out->SV)->elt[i])->dimSize = n_features;
+				}
+				else {
+					throw LVException(__FILE__, __LINE__, "Model error: A support vector in the model is invalid (null).");
+				}
+			}
+			else{
 				throw LVException(__FILE__, __LINE__, "All support vectors in the model must have same length (libsvm-dense only).");
-			}
-
-			if (model_in->SV[i].values != nullptr && model_in->SV[i].dim > 0) {
-				LVResizeNumericArrayHandle((*model_out->SV)->elt[i], model_in->SV[i].dim);
-
-				// Copy data over
-				MoveBlock(model_in->SV[i].values, (*(*model_out->SV)->elt[i])->elt, n_features);
-				(*(*model_out->SV)->elt[i])->dimSize = n_features;
-			}
-			else {
-				throw LVException(__FILE__, __LINE__, "Model error: A support vector in the model is invalid (null).");
 			}
 		}
 

@@ -6,7 +6,9 @@
 
 #pragma once
 
+#ifndef _DENSE_REP
 #define _DENSE_REP
+#endif
 
 #include <atomic>
 #include <memory>
