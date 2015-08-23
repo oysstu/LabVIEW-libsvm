@@ -1,12 +1,11 @@
 CALL "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86
+
 SET TARGET="windows_x86"
+
+del /s /q /f *.obj
+del /s /q /f %TARGET%\*.lib
 
 if not exist .\%TARGET% mkdir %TARGET%
 
-nmake /E -f Makefile.win clean all lib
-
-cd .\%TARGET%\
-ren libsvm.dll libsvm-dense.dll
-ren libsvm.exp libsvm-dense.exp
-ren libsvm.lib libsvm-dense.lib
-cd ..
+CL.exe /MD /c /EHsc /D _WIN32 /D _CRT_SECURE_NO_DEPRECATE /D _DENSE_REP /O2 svm.cpp
+LIB.exe /NOLOGO /OUT:%TARGET%\libsvm-dense.lib svm.obj

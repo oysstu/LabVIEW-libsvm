@@ -7,14 +7,11 @@ IF EXIST "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\amd64\vcvar
 )
 
 SET TARGET="windows_x86_64"
-SET CFLAGS="/nologo /O2 /EHsc /I. /D _WIN32 /D _WIN64 /D _CRT_SECURE_NO_DEPRECATE"
+
+del /s /q /f *.obj
+del /s /q /f %TARGET%\*.lib
 
 if not exist .\%TARGET% mkdir %TARGET%
 
-nmake /E -f Makefile.win clean all lib
-
-cd .\%TARGET%\
-ren libsvm.dll libsvm-dense.dll
-ren libsvm.exp libsvm-dense.exp
-ren libsvm.lib libsvm-dense.lib
-cd ..
+CL.exe /c /EHsc /MD /D _WIN64 /D _CRT_SECURE_NO_DEPRECATE /D _DENSE_REP /O2 svm.cpp
+LIB.exe /NOLOGO /OUT:%TARGET%\libsvm-dense.lib svm.obj
