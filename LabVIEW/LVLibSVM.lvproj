@@ -19,7 +19,6 @@
 		<Item Name="LibSVM Sparse" Type="Folder" URL="../LibSVM Sparse">
 			<Property Name="NI.DISK" Type="Bool">true</Property>
 		</Item>
-		<Item Name="SubVIs" Type="Folder"/>
 		<Item Name="Tools" Type="Folder" URL="../Tools">
 			<Property Name="NI.DISK" Type="Bool">true</Property>
 		</Item>
