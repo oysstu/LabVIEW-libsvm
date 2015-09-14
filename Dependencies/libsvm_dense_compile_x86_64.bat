@@ -13,5 +13,5 @@ del /s /q /f %TARGET%\*.lib
 
 if not exist .\%TARGET% mkdir %TARGET%
 
-CL.exe /c /EHsc /MD /D _WIN64 /D _CRT_SECURE_NO_DEPRECATE /D _DENSE_REP /O2 svm.cpp
-LIB.exe /NOLOGO /OUT:%TARGET%\libsvm-dense.lib svm.obj
+CL.exe /GL /c /EHsc /MD /D _WIN64 /D _CRT_SECURE_NO_DEPRECATE /D _DENSE_REP /O2 svm.cpp
+LIB.exe /LTCG /NOLOGO /OUT:%TARGET%\libsvm-dense.lib svm.obj

@@ -13,7 +13,7 @@ del /s /q /f %TARGET%\*.lib
 
 if not exist .\%TARGET% mkdir %TARGET%
 
-CL.exe /c /EHsc /MD /D _WIN64 /D _CRT_SECURE_NO_DEPRECATE /O2 linear.cpp tron.cpp blas\*.c
-LIB.exe /NOLOGO /OUT:%TARGET%\liblinear.lib *.obj
+CL.exe /c /GL /EHsc /MD /D _WIN64 /D _CRT_SECURE_NO_DEPRECATE /O2 linear.cpp tron.cpp blas\*.c
+LIB.exe /LTCG /NOLOGO /OUT:%TARGET%\liblinear.lib *.obj
 
 
