@@ -4,3 +4,4 @@
 3.  Implement user-friendly precomputed kernels (in LabVIEW)
 4a. Make an object-oriented interface in LabVIEW.
 4b. Encapsulate the svm_problem / linear_problem in a DVR to avoid data duplication, might be necessary for huge datasets.
+5.  Create an interface to libsvm-dense, which uses dense feature vectors to improve performance.

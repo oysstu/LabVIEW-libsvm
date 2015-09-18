@@ -57,11 +57,11 @@ struct LVsvm_parameter {
 
 struct LVsvm_model {
 	LVsvm_parameter param;
-	int32_t nr_class;							// Number of classes
-	int32_t l;									// Number of support vectors
+	int32_t nr_class;				// Number of classes
+	int32_t l;					// Number of support vectors
 	LVArray_Hdl<LVArray_Hdl<LVsvm_node>> SV;	// Support vectors
-	LVArray_Hdl<double, 2> sv_coef;				// Support vector coefficients ((nr_classes-1) X SV count)
-	LVArray_Hdl<double> rho;					// Bias term
+	LVArray_Hdl<double, 2> sv_coef;			// Support vector coefficients ((nr_classes-1) X SV count)
+	LVArray_Hdl<double> rho;			// Bias term
 	LVArray_Hdl<double> probA;
 	LVArray_Hdl<double> probB;
 	LVArray_Hdl<int32_t> sv_indices;
@@ -71,7 +71,9 @@ struct LVsvm_model {
 
 
 
+//
 //-- Compile-time size checks
+//
 
 // Check that padding matches that of LVsvm_node
 static_assert (sizeof(LVsvm_node) == sizeof(svm_node), "Size of LVSvm_node does not match svm_node.");
@@ -103,7 +105,7 @@ static std::atomic<LVUserEventRef *> loggingUsrEv(nullptr);
 #define LVLIBSVM_API extern "C" __declspec(dllexport)
 #define CALLCONV __cdecl
 
-LVLIBSVM_API int32_t	CALLCONV GetLibSVMVersion() { return LIBSVM_VERSION; }
+LVLIBSVM_API int32_t		CALLCONV GetLibSVMVersion() { return LIBSVM_VERSION; }
 
 LVLIBSVM_API void		CALLCONV LVsvm_train(lvError *lvErr, const LVsvm_problem *prob_in, const LVsvm_parameter *param_in, LVsvm_model * model_out);
 
