@@ -13,7 +13,7 @@
 #include "LVTypeDecl.h"
 
 #ifndef LIBLINEAR_VERSION
-#define LIBLINEAR_VERSION 201
+#define LIBLINEAR_VERSION 210
 #endif
 
 #pragma region TypeDefs

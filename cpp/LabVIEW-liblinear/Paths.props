@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <LIBLINEAR_PATH>C:\dev\liblinear-201</LIBLINEAR_PATH>
+    <LIBLINEAR_PATH>C:\dev\liblinear-210</LIBLINEAR_PATH>
     <TARGET_DIR>$(SolutionDir)\..\LabVIEW\bin\</TARGET_DIR>
   </PropertyGroup>
   <PropertyGroup />
