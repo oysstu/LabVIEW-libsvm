@@ -2,8 +2,8 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <LABVIEW64_PATH>C:\Program Files\National Instruments\LabVIEW 2014</LABVIEW64_PATH>
-    <LABVIEW32_PATH>C:\Program Files (x86)\National Instruments\LabVIEW 2014</LABVIEW32_PATH>
+    <LABVIEW64_PATH>C:\Program Files\National Instruments\LabVIEW 2015</LABVIEW64_PATH>
+    <LABVIEW32_PATH>C:\Program Files (x86)\National Instruments\LabVIEW 2015</LABVIEW32_PATH>
     <TARGET_DIR>$(SolutionDir)\..\LabVIEW\bin\</TARGET_DIR>
   </PropertyGroup>
   <PropertyGroup />
