@@ -1,4 +1,3 @@
 ## TODOs
 1. Implement user-friendly precomputed kernels (in LabVIEW)
-2. Improve liblinear interface
-3. Test and provide tools for multi-class SVM
+2. Test and provide tools for multi-class SVM
