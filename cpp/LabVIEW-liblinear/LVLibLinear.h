@@ -22,7 +22,7 @@
 struct LVlinear_node
 {
 	int32_t index;
-#ifdef _WIN32
+#ifndef _WIN64
 	int32_t padding; // Insert padding on 32-bit windows
 #endif
 	double value;
@@ -60,7 +60,7 @@ struct LVlinear_model
 
 // Compile-time size checks
 
-// Check that padding matches that of LVsvm_node (TODO: Check x86)
+// Check that padding matches that of LVsvm_node
 static_assert (sizeof(LVlinear_node) == sizeof(feature_node), "Size of LVSvm_node does not match svm_node.");
 
 // Check that padding is not inserted in between the two-dimensional sparse arrays used

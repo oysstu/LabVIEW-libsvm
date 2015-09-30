@@ -24,7 +24,7 @@
 struct LVsvm_node
 {
 	int32_t index;
-#ifdef _WIN32
+#ifndef _WIN64
 	int32_t padding; // Insert padding on 32-bit windows
 #endif
 	double value;
