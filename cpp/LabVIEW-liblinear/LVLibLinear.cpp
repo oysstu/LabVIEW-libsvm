@@ -6,12 +6,18 @@
 #include <memory>
 #include <extcode.h>
 
+#include <linear.h>
+
 #include "LVTypeDecl.h"
 #include "LVUtility.h"
 #include "LVException.h"
 
 void LVlinear_train(lvError *lvErr, const LVlinear_problem *prob_in, const LVlinear_parameter *param_in, LVlinear_model * model_out){
 	try{
+		// Input verification: Nonempty problem
+		if (prob_in->x == nullptr || (*(prob_in->x))->dimSize == 0)
+			throw LVException(__FILE__, __LINE__, "Empty problem passed to liblinear_train.");
+
 		// Input verification: Problem dimensions
 		if ((*(prob_in->x))->dimSize != (*(prob_in->y))->dimSize)
 			throw LVException(__FILE__, __LINE__, "The problem must have an equal number of labels and feature vectors (x and y).");
@@ -21,6 +27,8 @@ void LVlinear_train(lvError *lvErr, const LVlinear_problem *prob_in, const LVlin
 		uint32_t nr_nodes = (*(prob_in->y))->dimSize;
 		prob->l = nr_nodes;
 		prob->y = (*(prob_in->y))->elt;
+		prob->n = 0; // Calculated later
+		prob->bias = prob_in->bias;
 
 		// Create and array of pointers (sparse datastructure)
 		auto x = std::make_unique<feature_node*[]>(nr_nodes);
@@ -31,6 +39,14 @@ void LVlinear_train(lvError *lvErr, const LVlinear_problem *prob_in, const LVlin
 			// Assign the innermost svm_node array pointers to the array of pointers
 			auto xi_in_Hdl = (*x_in)->elt[i];
 			x[i] = reinterpret_cast<feature_node*>((*xi_in_Hdl)->elt);
+
+			// Calculate the max index
+			// This detail is not exposed in LabVIEW, as setting the wrong value causes a crash
+			// Second to last element should contain the max index for that feature vector (as they are in ascending order).
+			auto secondToLast = (*xi_in_Hdl)->dimSize - 2; // Ignoring -1 index
+			auto largestIndex = (*xi_in_Hdl)->elt[secondToLast].index;
+			if (secondToLast >= 0 && largestIndex > prob->n)
+				prob->n = largestIndex;
 		}
 
 		//-- Convert parameters
@@ -72,6 +88,10 @@ void LVlinear_train(lvError *lvErr, const LVlinear_problem *prob_in, const LVlin
 
 void LVlinear_cross_validation(lvError *lvErr, const LVlinear_problem *prob_in, const LVlinear_parameter *param_in, const int32_t nr_fold, LVArray_Hdl<double> target_out){
 	try{
+		// Input verification: Nonempty problem
+		if (prob_in->x == nullptr || (*(prob_in->x))->dimSize == 0)
+			throw LVException(__FILE__, __LINE__, "Empty problem passed to liblinear_crossvalidation.");
+
 		// Input verification: Problem dimensions
 		if ((*(prob_in->x))->dimSize != (*(prob_in->y))->dimSize)
 			throw LVException(__FILE__, __LINE__, "The problem must have an equal number of labels and feature vectors (x and y).");
@@ -81,6 +101,8 @@ void LVlinear_cross_validation(lvError *lvErr, const LVlinear_problem *prob_in, 
 		uint32_t nr_nodes = (*(prob_in->y))->dimSize;
 		prob->l = nr_nodes;
 		prob->y = (*(prob_in->y))->elt;
+		prob->n = 0; // Calculated later
+		prob->bias = prob_in->bias;
 
 		// Create and array of pointers (sparse datastructure)
 		auto x = std::make_unique<feature_node*[]>(nr_nodes);
@@ -91,7 +113,19 @@ void LVlinear_cross_validation(lvError *lvErr, const LVlinear_problem *prob_in, 
 			// Assign the innermost svm_node array pointers to the array of pointers
 			auto xi_in_Hdl = (*x_in)->elt[i];
 			x[i] = reinterpret_cast<feature_node*>((*xi_in_Hdl)->elt);
+
+			// Calculate the max index
+			// This detail is not exposed in LabVIEW, as setting the wrong value causes a crash
+			// Second to last element should contain the max index for that feature vector (as they are in ascending order).
+			auto secondToLast = (*xi_in_Hdl)->dimSize - 2; // Ignoring -1 index
+			auto largestIndex = (*xi_in_Hdl)->elt[secondToLast].index;
+			if (largestIndex > prob->n)
+				prob->n = largestIndex;
 		}
+
+		// n increases by one if bias is present
+		if (prob_in->bias >= 0)
+			prob->n++;
 
 		// Assign parameters to svm_parameter
 		auto param = std::make_unique<parameter>();
@@ -107,6 +141,7 @@ void LVlinear_cross_validation(lvError *lvErr, const LVlinear_problem *prob_in, 
 
 		// Run cross validation
 		cross_validation(prob.get(), param.get(), nr_fold, (*target_out)->elt);
+		
 		(*target_out)->dimSize = nr_nodes;
 	}
 	catch (LVException &ex) {
@@ -206,7 +241,7 @@ double LVlinear_predict_probability(lvError *lvErr, const LVlinear_model  *model
 		// Check probability model
 		int valid_probability = check_probability_model(mdl.get());
 		if (!valid_probability)
-			throw LVException(__FILE__, __LINE__, "The model does not support probability output.");
+			throw LVException(__FILE__, __LINE__, "The selected solver type does not support probability output.");
 
 		// Allocate room for probability estimates
 		LVResizeNumericArrayHandle(prob_estimates_out, mdl->nr_class);
@@ -275,23 +310,28 @@ void LVConvertParameter(const LVlinear_parameter *param_in, parameter *param_out
 	param_out->eps = param_in->eps;
 	param_out->C = param_in->C;
 	param_out->p = param_in->p;
-
-	if ((*(param_in->weight))->dimSize != (*(param_in->weight_label))->dimSize)
-		throw LVException(__FILE__, __LINE__, "Parameter error: Number of elements in weight_label and weight does not match.");
-
-	param_out->nr_weight = (*(param_in->weight))->dimSize;
+	param_out->init_sol = nullptr; // TODO: add support for warm-start
 
 	// Weight label
-	if ((*(param_in->weight_label))->dimSize > 0)
-		param_out->weight_label = (*(param_in->weight_label))->elt;
-	else
-		param_out->weight_label = nullptr;
+	if (param_in->weight_label != nullptr && param_in->weight != nullptr){
+		if ((*(param_in->weight))->dimSize != (*(param_in->weight_label))->dimSize)
+			throw LVException(__FILE__, __LINE__, "Parameter error: Number of elements in weight_label and weight does not match.");
 
-	// Weight
-	if ((*(param_in->weight))->dimSize > 0)
-		param_out->weight = (*(param_in->weight))->elt;
-	else
-		param_out->weight = nullptr;
+		if ((*(param_in->weight_label))->dimSize > 0)
+			param_out->weight_label = (*(param_in->weight_label))->elt;
+		else
+			param_out->weight_label = nullptr;
+
+		// Weight
+		if ((*(param_in->weight))->dimSize > 0){
+			param_out->weight = (*(param_in->weight))->elt;
+			param_out->nr_weight = (*(param_in->weight))->dimSize;
+		}
+		else{
+			param_out->weight = nullptr;
+			param_out->nr_weight = 0;
+		}
+	}
 }
 
 void LVConvertModel(const LVlinear_model *model_in, model *model_out){
@@ -321,7 +361,6 @@ void LVConvertModel(const model *model_in, LVlinear_model *model_out){
 	model_out->nr_class = model_in->nr_class;
 	model_out->nr_feature = model_in->nr_feature;
 	model_out->bias = model_in->bias;
-
 	int nr_class = model_in->nr_class;
 	int nr_feature = model_in->nr_feature;
 
@@ -335,16 +374,22 @@ void LVConvertModel(const model *model_in, LVlinear_model *model_out){
 		(*model_out->label)->dimSize = 0;
 	}
 
-	// w
-	int32_t nr_w = nr_feature * nr_class;
-	// If bias is present, the feature vector increases by one
+	// n is equal to nr_feature, incremented if bias is present
+	int n = nr_feature;
 	if (model_in->bias >= 0)
-		nr_w += nr_class;
+		n++;
 
-	if (model_out->w != nullptr){
-		LVResizeNumericArrayHandle(model_out->w, nr_w);
-		MoveBlock(model_in->w, (*(model_out->w))->elt, nr_w * sizeof(double));
-		(*model_out->w)->dimSize = nr_w;
+	// nr_w is equal to nr_class with one exception
+	int nr_w;
+	if (model_in->nr_class == 2 && model_in->param.solver_type != MCSVM_CS)
+		nr_w = 1;
+	else
+		nr_w = model_in->nr_class;
+
+	if (model_in->w != nullptr){
+		LVResizeNumericArrayHandle(model_out->w, n*nr_w);
+		MoveBlock(model_in->w, (*(model_out->w))->elt, nr_w * n * sizeof(double));
+		(*model_out->w)->dimSize = nr_w*n;
 	}
 	else{
 		(*model_out->w)->dimSize = 0;
