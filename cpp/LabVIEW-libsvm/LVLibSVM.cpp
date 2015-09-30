@@ -450,7 +450,7 @@ void LVConvertModel(const svm_model *model_in, LVsvm_model *model_out){
 	model_out->l = model_in->l;
 
 	int nr_class = model_in->nr_class;				// Number of classes
-	int nr_pairs = nr_class*(nr_class - 1) / 2;	// Total pairwise count
+	int nr_pairs = nr_class*(nr_class - 1) / 2;		// Total pairwise count
 	int l = model_in->l;							// Total SV count
 
 	// Label
