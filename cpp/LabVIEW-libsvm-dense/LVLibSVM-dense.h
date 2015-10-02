@@ -108,11 +108,11 @@ LVLIBSVM_API void CALLCONV LVsvm_delete_logging_userevent(lvError *lvErr, LVUser
 //-- Helper functions
 
 // Assigns the cluster from LabVIEW to a svm_parameter struct
-void LVConvertParameter(const LVsvm_parameter *param_in, svm_parameter *param_out);
+void LVConvertParameter(const LVsvm_parameter &param_in, svm_parameter &param_out);
 
-void LVConvertParameter(const svm_parameter *param_in, LVsvm_parameter *param_out);
+void LVConvertParameter(const svm_parameter &param_in, LVsvm_parameter &param_out);
 
 // Assigns the LVsvm_model cluster from LabVIEW to svm_model
-void LVConvertModel(const LVsvm_model *model_in, svm_model *model_out, std::unique_ptr<svm_node[]> &SV, std::unique_ptr<double*[]> &sv_coef);
+void LVConvertModel(const LVsvm_model &model_in, svm_model &model_out, std::unique_ptr<svm_node[]> &SV, std::unique_ptr<double*[]> &sv_coef);
 
-void LVConvertModel(const svm_model *model_in, LVsvm_model *model_out);
+void LVConvertModel(const svm_model &model_in, LVsvm_model &model_out);

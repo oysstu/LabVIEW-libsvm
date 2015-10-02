@@ -51,7 +51,7 @@ void LVsvm_train(lvError *lvErr, const LVsvm_problem *prob_in, const LVsvm_param
 
 		// Assign parameters to svm_parameter
 		auto param = std::make_unique<svm_parameter>();
-		LVConvertParameter(param_in, param.get());
+		LVConvertParameter(*param_in, *param);
 
 		// Verify parameters
 		const char * param_check = svm_check_parameter(prob.get(), param.get());
@@ -62,7 +62,7 @@ void LVsvm_train(lvError *lvErr, const LVsvm_problem *prob_in, const LVsvm_param
 		svm_model *model = svm_train(prob.get(), param.get());
 
 		// Copy the data into LabVIEW memory (hardcopy)
-		LVConvertModel(model, model_out);
+		LVConvertModel(*model, *model_out);
 
 		// Release memory allocated by svm_train
 		svm_free_model_content(model);
@@ -149,7 +149,7 @@ void LVsvm_cross_validation(lvError *lvErr, const LVsvm_problem *prob_in, const 
 
 		// Assign parameters to svm_parameter
 		auto param = std::make_unique<svm_parameter>();
-		LVConvertParameter(param_in, param.get());
+		LVConvertParameter(*param_in, *param);
 
 		// Verify parameters
 		const char * param_check = svm_check_parameter(prob.get(), param.get());
@@ -180,11 +180,19 @@ void LVsvm_cross_validation(lvError *lvErr, const LVsvm_problem *prob_in, const 
 
 double	LVsvm_predict(lvError *lvErr, const struct LVsvm_model *model_in, const LVArray_Hdl<double> x_in) {
 	try {
+		// Input validation: Uninitialized model
+		if (model_in == nullptr || model_in->SV == nullptr || (*model_in->SV)->dimSize == 0)
+			throw LVException(__FILE__, __LINE__, "Uninitialized model passed to libsvmdense_predict.");
+
+		// Input validation: Empty feature vector
+		if (x_in == nullptr || (*x_in)->dimSize == 0)
+			throw LVException(__FILE__, __LINE__, "Empty feature vector passed to libsvmdense_predict.");
+
 		// Convert LVsvm_model to svm_model
 		auto model = std::make_unique<svm_model>();
 		std::unique_ptr<svm_node[]> SV;
 		std::unique_ptr<double*[]> sv_coef;
-		LVConvertModel(model_in, model.get(), SV, sv_coef);
+		LVConvertModel(*model_in, *model, SV, sv_coef);
 
 		svm_node node = { (*x_in)->dimSize, (*x_in)->elt };
 		double label = svm_predict(model.get(), &node);
@@ -209,11 +217,19 @@ double	LVsvm_predict(lvError *lvErr, const struct LVsvm_model *model_in, const L
 
 double	LVsvm_predict_values(lvError *lvErr, const LVsvm_model *model_in, const LVArray_Hdl<double> x_in, LVArray_Hdl<double> dec_values_out) {
 	try {
+		// Input validation: Uninitialized model
+		if (model_in == nullptr || model_in->SV == nullptr || (*model_in->SV)->dimSize == 0)
+			throw LVException(__FILE__, __LINE__, "Uninitialized model passed to libsvmdense_predict_values.");
+
+		// Input validation: Empty feature vector
+		if (x_in == nullptr || (*x_in)->dimSize == 0)
+			throw LVException(__FILE__, __LINE__, "Empty feature vector passed to libsvmdense_predict_values.");
+
 		// Convert LVsvm_model to svm_model
 		auto model = std::make_unique<svm_model>();
 		std::unique_ptr<svm_node[]> SV;
 		std::unique_ptr<double*[]> sv_coef;
-		LVConvertModel(model_in, model.get(), SV, sv_coef);
+		LVConvertModel(*model_in, *model, SV, sv_coef);
 
 		// Allocate room for dec_values output
 		if (model->param.svm_type == ONE_CLASS ||
@@ -254,11 +270,19 @@ double	LVsvm_predict_values(lvError *lvErr, const LVsvm_model *model_in, const L
 
 double	LVsvm_predict_probability(lvError *lvErr, const LVsvm_model *model_in, const LVArray_Hdl<double> x_in, LVArray_Hdl<double> prob_estimates_out) {
 	try {
+		// Input validation: Uninitialized model
+		if (model_in == nullptr || model_in->SV == nullptr || (*model_in->SV)->dimSize == 0)
+			throw LVException(__FILE__, __LINE__, "Uninitialized model passed to libsvmdense_predict_probability.");
+
+		// Input validation: Empty feature vector
+		if (x_in == nullptr || (*x_in)->dimSize == 0)
+			throw LVException(__FILE__, __LINE__, "Empty feature vector passed to libsvmdense_predict_probability.");
+
 		// Convert LVsvm_model to svm_model
 		auto model = std::make_unique<svm_model>();
 		std::unique_ptr<svm_node[]> SV;
 		std::unique_ptr<double*[]> sv_coef;
-		LVConvertModel(model_in, model.get(), SV, sv_coef);
+		LVConvertModel(*model_in, *model, SV, sv_coef);
 
 		// Check probability model
 		int valid_probability = svm_check_probability_model(model.get());
@@ -304,42 +328,39 @@ double	LVsvm_predict_probability(lvError *lvErr, const LVsvm_model *model_in, co
 // -- Helper functions
 //
 
-void LVConvertParameter(const LVsvm_parameter *param_in, svm_parameter *param_out) {
-	if (param_in == nullptr || param_out == nullptr)
-		return;
-
+void LVConvertParameter(const LVsvm_parameter &param_in, svm_parameter &param_out) {
 	//-- Copy assignments
-	param_out->svm_type = param_in->svm_type;
-	param_out->kernel_type = param_in->kernel_type;
-	param_out->degree = param_in->degree;
-	param_out->gamma = param_in->gamma;
-	param_out->coef0 = param_in->coef0;
-	param_out->cache_size = param_in->cache_size;
-	param_out->eps = param_in->eps;
-	param_out->C = param_in->C;
-	param_out->nu = param_in->nu;
-	param_out->p = param_in->p;
-	param_out->shrinking = param_in->shrinking;
-	param_out->probability = param_in->probability;
+	param_out.svm_type = param_in.svm_type;
+	param_out.kernel_type = param_in.kernel_type;
+	param_out.degree = param_in.degree;
+	param_out.gamma = param_in.gamma;
+	param_out.coef0 = param_in.coef0;
+	param_out.cache_size = param_in.cache_size;
+	param_out.eps = param_in.eps;
+	param_out.C = param_in.C;
+	param_out.nu = param_in.nu;
+	param_out.p = param_in.p;
+	param_out.shrinking = param_in.shrinking;
+	param_out.probability = param_in.probability;
 
-	if ((*(param_in->weight))->dimSize != (*(param_in->weight_label))->dimSize)
+	if ((*param_in.weight)->dimSize != (*param_in.weight_label)->dimSize)
 		throw LVException(__FILE__, __LINE__, "Parameter error: the number of elements in weight and weight_label does not match.");
 
-	param_out->nr_weight = (*(param_in->weight))->dimSize;
+	param_out.nr_weight = (*(param_in.weight))->dimSize;
 
 	//-- Array assigments
 
 	// Weight label
-	if (param_in->weight_label != nullptr && (*(param_in->weight_label))->dimSize > 0)
-		param_out->weight_label = (*(param_in->weight_label))->elt;
+	if (param_in.weight_label != nullptr && (*param_in.weight_label)->dimSize > 0)
+		param_out.weight_label = (*param_in.weight_label)->elt;
 	else
-		param_out->weight_label = nullptr;
+		param_out.weight_label = nullptr;
 
 	// Weight
-	if (param_in->weight != nullptr && (*(param_in->weight))->dimSize > 0)
-		param_out->weight = (*(param_in->weight))->elt;
+	if (param_in.weight != nullptr && (*(param_in.weight))->dimSize > 0)
+		param_out.weight = (*(param_in.weight))->elt;
 	else
-		param_out->weight = nullptr;
+		param_out.weight = nullptr;
 }
 
 void LVConvertParameter(const svm_parameter &param_in, LVsvm_parameter &param_out) {
@@ -374,167 +395,164 @@ void LVConvertParameter(const svm_parameter &param_in, LVsvm_parameter &param_ou
 	}
 }
 
-void LVConvertModel(const LVsvm_model *model_in, svm_model *model_out, std::unique_ptr<svm_node[]> &SV, std::unique_ptr<double*[]> &sv_coef) {
+void LVConvertModel(const LVsvm_model &model_in, svm_model &model_out, std::unique_ptr<svm_node[]> &SV, std::unique_ptr<double*[]> &sv_coef) {
 	// Input verification: Reject uninitialized models from LabVIEW
-	if (model_in->l <= 0 || model_in->nSV == nullptr || (*model_in->nSV)->dimSize == 0 || model_in->SV == nullptr || (*model_in->SV)->dimSize == 0)
+	if (model_in.l <= 0 || model_in.nSV == nullptr || (*model_in.nSV)->dimSize == 0 || model_in.SV == nullptr || (*model_in.SV)->dimSize == 0)
 		throw LVException(__FILE__, __LINE__, "Uninitialized model passed to libsvm.");
 	
 	// Assign the parameters
-	LVConvertParameter(&model_in->param, &model_out->param);
+	LVConvertParameter(model_in.param, model_out.param);
 
 	//-- Copy assignments
-	model_out->nr_class = model_in->nr_class;
-	model_out->l = model_in->l;
-	model_out->free_sv = 0;
+	model_out.nr_class = model_in.nr_class;
+	model_out.l = model_in.l;
+	model_out.free_sv = 0;
 
 	//-- 1D Array assignments
 	// Rho
-	if ((*(model_in->rho))->dimSize > 0)
-		model_out->rho = (*(model_in->rho))->elt;
+	if ((*(model_in.rho))->dimSize > 0)
+		model_out.rho = (*(model_in.rho))->elt;
 	else
-		model_out->rho = nullptr;
+		model_out.rho = nullptr;
 
 	// ProbA
-	if ((*(model_in->probA))->dimSize > 0)
-		model_out->probA = (*(model_in->probA))->elt;
+	if ((*(model_in.probA))->dimSize > 0)
+		model_out.probA = (*(model_in.probA))->elt;
 	else
-		model_out->probA = nullptr;
+		model_out.probA = nullptr;
 
 	// ProbB
-	if ((*(model_in->probB))->dimSize > 0)
-		model_out->probB = (*(model_in->probB))->elt;
+	if ((*(model_in.probB))->dimSize > 0)
+		model_out.probB = (*(model_in.probB))->elt;
 	else
-		model_out->probB = nullptr;
+		model_out.probB = nullptr;
 
 	// sv indices
-	if ((*(model_in->sv_indices))->dimSize > 0)
-		model_out->sv_indices = (*(model_in->sv_indices))->elt;
+	if ((*(model_in.sv_indices))->dimSize > 0)
+		model_out.sv_indices = (*(model_in.sv_indices))->elt;
 	else
-		model_out->sv_indices = nullptr;
+		model_out.sv_indices = nullptr;
 
 	// label
-	if ((*(model_in->label))->dimSize > 0)
-		model_out->label = (*(model_in->label))->elt;
+	if ((*(model_in.label))->dimSize > 0)
+		model_out.label = (*(model_in.label))->elt;
 	else
-		model_out->label = nullptr;
+		model_out.label = nullptr;
 
 	// nSV
-	if ((*(model_in->nSV))->dimSize > 0)
-		model_out->nSV = (*(model_in->nSV))->elt;
+	if ((*(model_in.nSV))->dimSize > 0)
+		model_out.nSV = (*(model_in.nSV))->elt;
 	else
-		model_out->nSV = nullptr;
+		model_out.nSV = nullptr;
 
 	//-- 2D Array assigments (pointer-to-pointer)
 
 	// SV
-	if ((*(model_in->SV))->dimSize > 0) {
-		uint32_t n_SV = (*(model_in->SV))->dimSize;
+	if ((*(model_in.SV))->dimSize > 0) {
+		uint32_t n_SV = (*(model_in.SV))->dimSize;
 
 		SV = std::make_unique<svm_node[]>(n_SV);
 		for (uint32_t i = 0; i < n_SV; i++) {
-			SV[i].dim = (*(*model_in->SV)->elt[i])->dimSize;
-			SV[i].values = (*(*model_in->SV)->elt[i])->elt;
+			SV[i].dim = (*(*model_in.SV)->elt[i])->dimSize;
+			SV[i].values = (*(*model_in.SV)->elt[i])->elt;
 		}
-		model_out->SV = SV.get();
+		model_out.SV = SV.get();
 	}
 	else {
-		model_out->SV = nullptr;
+		model_out.SV = nullptr;
 	}
 
 	// sv_coef
-	if ((*(model_in->sv_coef))->dimSize > 0) {
-		uint32_t *nsv_coef = (*(model_in->sv_coef))->dimSize;
+	if ((*(model_in.sv_coef))->dimSize > 0) {
+		uint32_t *nsv_coef = (*(model_in.sv_coef))->dimSize;
 		sv_coef = std::make_unique<double*[]>(nsv_coef[0]);
 		for (uint32_t i = 0; i < nsv_coef[0]; i++) {
-			sv_coef[i] = &(*(model_in->sv_coef))->elt[i * nsv_coef[1]];
+			sv_coef[i] = &(*(model_in.sv_coef))->elt[i * nsv_coef[1]];
 		}
-		model_out->sv_coef = sv_coef.get();
+		model_out.sv_coef = sv_coef.get();
 	}
 	else {
-		model_out->sv_coef = nullptr;
+		model_out.sv_coef = nullptr;
 	}
 }
 
-void LVConvertModel(const svm_model *model_in, LVsvm_model *model_out) {
+void LVConvertModel(const svm_model &model_in, LVsvm_model &model_out) {
 	// Convert parameters
-	if (model_in == nullptr || model_out == nullptr)
-		throw LVException(__FILE__, __LINE__, "NULL parameter passed to LVConvertModel.");
-
-	LVConvertParameter(model_in->param, model_out->param);
+	LVConvertParameter(model_in.param, model_out.param);
 
 	// Convert svm_model to LVsvm_model
-	model_out->nr_class = model_in->nr_class;
-	model_out->l = model_in->l;
+	model_out.nr_class = model_in.nr_class;
+	model_out.l = model_in.l;
 
-	int n_class = model_in->nr_class;				// Number of classes
+	int n_class = model_in.nr_class;				// Number of classes
 	int n_pairs = n_class*(n_class - 1) / 2;		// Total pairwise count
-	int n_SV = model_in->l;							// Total SV count (not to be confused with the nSV member)
+	int n_SV = model_in.l;							// Total SV count (not to be confused with the nSV member)
 
 	// Label
-	if (model_in->label != nullptr) {
-		LVResizeNumericArrayHandle(model_out->label, n_class);
-		MoveBlock(model_in->label, (*(model_out->label))->elt, n_class * sizeof(int32_t));
-		(*model_out->label)->dimSize = model_in->nr_class;
+	if (model_in.label != nullptr) {
+		LVResizeNumericArrayHandle(model_out.label, n_class);
+		MoveBlock(model_in.label, (*(model_out.label))->elt, n_class * sizeof(int32_t));
+		(*model_out.label)->dimSize = model_in.nr_class;
 	}
 
 	// Rho
-	if (model_in->rho != nullptr) {
-		LVResizeNumericArrayHandle(model_out->rho, n_pairs);
-		MoveBlock(model_in->rho, (*(model_out->rho))->elt, n_pairs * sizeof(double));
-		(*model_out->rho)->dimSize = n_pairs;
+	if (model_in.rho != nullptr) {
+		LVResizeNumericArrayHandle(model_out.rho, n_pairs);
+		MoveBlock(model_in.rho, (*(model_out.rho))->elt, n_pairs * sizeof(double));
+		(*model_out.rho)->dimSize = n_pairs;
 	}
 
 	// Probability (probA and probB)
-	if ((model_in->param).probability) {
-		if (model_in->probA != nullptr) {
-			LVResizeNumericArrayHandle(model_out->probA, n_pairs);
-			MoveBlock(model_in->probA, (*(model_out->probA))->elt, n_pairs * sizeof(double));
-			(*(model_out->probA))->dimSize = n_pairs;
+	if ((model_in.param).probability) {
+		if (model_in.probA != nullptr) {
+			LVResizeNumericArrayHandle(model_out.probA, n_pairs);
+			MoveBlock(model_in.probA, (*(model_out.probA))->elt, n_pairs * sizeof(double));
+			(*(model_out.probA))->dimSize = n_pairs;
 		}
 
-		if (model_in->probB != nullptr) {
-			LVResizeNumericArrayHandle(model_out->probB, n_pairs);
-			MoveBlock(model_in->probB, (*(model_out->probB))->elt, n_pairs * sizeof(double));
-			(*(model_out->probB))->dimSize = n_pairs;
+		if (model_in.probB != nullptr) {
+			LVResizeNumericArrayHandle(model_out.probB, n_pairs);
+			MoveBlock(model_in.probB, (*(model_out.probB))->elt, n_pairs * sizeof(double));
+			(*(model_out.probB))->dimSize = n_pairs;
 		}
 	}
 	else {
-		if (DSCheckHandle(model_out->probA) != noErr)
-			(*(model_out->probA))->dimSize = 0;
-		if (DSCheckHandle(model_out->probB) != noErr)
-			(*(model_out->probB))->dimSize = 0;
+		if (DSCheckHandle(model_out.probA) != noErr)
+			(*(model_out.probA))->dimSize = 0;
+		if (DSCheckHandle(model_out.probB) != noErr)
+			(*(model_out.probB))->dimSize = 0;
 	}
 
 	// nSVs (number of support vectors for each class)
-	if (model_in->nSV != nullptr) {
-		LVResizeNumericArrayHandle(model_out->nSV, n_class);
+	if (model_in.nSV != nullptr) {
+		LVResizeNumericArrayHandle(model_out.nSV, n_class);
 		for (int i = 0; i < n_class; i++)
-			(*(model_out->nSV))->elt[i] = model_in->nSV[i];
-		(*model_out->nSV)->dimSize = n_class;
+			(*(model_out.nSV))->elt[i] = model_in.nSV[i];
+		(*model_out.nSV)->dimSize = n_class;
 	}
 
 	// sv_indices
-	if (model_in->sv_indices != nullptr) {
-		LVResizeNumericArrayHandle(model_out->sv_indices, n_SV);
-		MoveBlock(model_in->sv_indices, (*(model_out->sv_indices))->elt, n_SV * sizeof(int32_t));
-		(*model_out->sv_indices)->dimSize = n_SV;
+	if (model_in.sv_indices != nullptr) {
+		LVResizeNumericArrayHandle(model_out.sv_indices, n_SV);
+		MoveBlock(model_in.sv_indices, (*(model_out.sv_indices))->elt, n_SV * sizeof(int32_t));
+		(*model_out.sv_indices)->dimSize = n_SV;
 	}
 
 	// SV (support vectors) rows: n_SV, cols: n_features
-	if (model_in->SV != nullptr && n_SV > 0) {
-		int n_features = model_in->SV[0].dim;
-		LVResizeHandleArrayHandle(model_out->SV, n_SV);
+	if (model_in.SV != nullptr && n_SV > 0) {
+		int n_features = model_in.SV[0].dim;
+		LVResizeHandleArrayHandle(model_out.SV, n_SV);
 
 		for (int i = 0; i < n_SV; i++) {
 			// Dense LabVIEW implementation does not allow for feature vectors of different size
-			if (model_in->SV[i].dim == n_features){
-				if (model_in->SV[i].values != nullptr && model_in->SV[i].dim > 0) {
-					LVResizeNumericArrayHandle((*model_out->SV)->elt[i], n_features);
+			if (model_in.SV[i].dim == n_features){
+				if (model_in.SV[i].values != nullptr && model_in.SV[i].dim > 0) {
+					LVResizeNumericArrayHandle((*model_out.SV)->elt[i], n_features);
 
 					// Copy data over
-					MoveBlock(model_in->SV[i].values, (*(*model_out->SV)->elt[i])->elt, n_features*sizeof(double));
+					MoveBlock(model_in.SV[i].values, (*(*model_out.SV)->elt[i])->elt, n_features*sizeof(double));
 
-					(*(*model_out->SV)->elt[i])->dimSize = n_features;
+					(*(*model_out.SV)->elt[i])->dimSize = n_features;
 				}
 				else {
 					throw LVException(__FILE__, __LINE__, "Model error: A support vector in the model is invalid (null).");
@@ -545,23 +563,23 @@ void LVConvertModel(const svm_model *model_in, LVsvm_model *model_out) {
 			}
 		}
 
-		(*model_out->SV)->dimSize = n_SV;
+		(*model_out.SV)->dimSize = n_SV;
 	}
 	else {
-		if (*(model_out->SV) != nullptr) {
-			(*model_out->SV)->dimSize = 0;
+		if (*(model_out.SV) != nullptr) {
+			(*model_out.SV)->dimSize = 0;
 		}
 	}
 
 	// sv_coef
-	if (model_in->sv_coef != nullptr) {
-		LVResizeNumericArrayHandle(model_out->sv_coef, (n_class - 1) * n_SV);
+	if (model_in.sv_coef != nullptr) {
+		LVResizeNumericArrayHandle(model_out.sv_coef, (n_class - 1) * n_SV);
 		for (int i = 0; i < n_class - 1; i++) {
-			MoveBlock(model_in->sv_coef[i], (*(model_out->sv_coef))->elt + i*n_SV, n_SV*sizeof(double));
+			MoveBlock(model_in.sv_coef[i], (*(model_out.sv_coef))->elt + i*n_SV, n_SV*sizeof(double));
 		}
 
-		(*(model_out->sv_coef))->dimSize[0] = n_class - 1;
-		(*(model_out->sv_coef))->dimSize[1] = n_SV;
+		(*(model_out.sv_coef))->dimSize[0] = n_class - 1;
+		(*(model_out.sv_coef))->dimSize[1] = n_SV;
 	}
 }
 
@@ -608,7 +626,7 @@ void LVsvm_save_model(lvError *lvErr, const char *path_in, const LVsvm_model *mo
 		auto model = std::make_unique<svm_model>();
 		std::unique_ptr<svm_node[]> SV;
 		std::unique_ptr<double*[]> sv_coef;
-		LVConvertModel(model_in, model.get(), SV, sv_coef);
+		LVConvertModel(*model_in, *model, SV, sv_coef);
 
 		int err = svm_save_model(path_in, model.get());
 		if (err == -1) {
@@ -646,7 +664,7 @@ void LVsvm_load_model(lvError *lvErr, const char *path_in, LVsvm_model *model_ou
 			throw LVException(__FILE__, __LINE__, "Model load operation failed (" + std::string(buf) + ").");
 		}
 		else {
-			LVConvertModel(model, model_out);
+			LVConvertModel(*model, *model_out);
 			svm_free_model_content(model);
 		}
 	}

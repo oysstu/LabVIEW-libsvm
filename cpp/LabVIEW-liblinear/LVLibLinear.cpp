@@ -51,7 +51,7 @@ void LVlinear_train(lvError *lvErr, const LVlinear_problem *prob_in, const LVlin
 
 		//-- Convert parameters
 		auto param = std::make_unique<parameter>();
-		LVConvertParameter(param_in, param.get());
+		LVConvertParameter(*param_in, *param);
 
 		// Verify parameters
 		const char * param_check = check_parameter(prob.get(), param.get());
@@ -62,7 +62,7 @@ void LVlinear_train(lvError *lvErr, const LVlinear_problem *prob_in, const LVlin
 		model *result = train(prob.get(), param.get());
 
 		// Copy model to LabVIEW memory
-		LVConvertModel(result, model_out);
+		LVConvertModel(*result, *model_out);
 
 		// Release memory allocated by train
 		free_model_content(result);
@@ -129,7 +129,7 @@ void LVlinear_cross_validation(lvError *lvErr, const LVlinear_problem *prob_in, 
 
 		// Assign parameters to svm_parameter
 		auto param = std::make_unique<parameter>();
-		LVConvertParameter(param_in, param.get());
+		LVConvertParameter(*param_in, *param);
 
 		// Verify parameters
 		const char * param_check = check_parameter(prob.get(), param.get());
@@ -161,9 +161,21 @@ void LVlinear_cross_validation(lvError *lvErr, const LVlinear_problem *prob_in, 
 
 double LVlinear_predict(lvError *lvErr, const struct LVlinear_model *model_in, const LVArray_Hdl<LVlinear_node> x_in){
 	try{
+		// Input validation: Uninitialized model
+		if (model_in == nullptr || model_in->w == nullptr || (*model_in->w)->dimSize == 0)
+			throw LVException(__FILE__, __LINE__, "Uninitialized model passed to liblinear_predict.");
+
+		// Input validation: Empty feature vector
+		if (x_in == nullptr || (*x_in)->dimSize == 0)
+			throw LVException(__FILE__, __LINE__, "Empty feature vector passed to liblinear_predict.");
+
+		// Input validation: Final index -1?
+		if ((*x_in)->elt[(*x_in)->dimSize - 1].index != -1)
+			throw LVException(__FILE__, __LINE__, "The index of the last element of the feature vector needs to be -1 (liblinear_predict).");
+
 		// Convert LVsvm_model to svm_model
 		auto mdl = std::make_unique<model>();
-		LVConvertModel(model_in, mdl.get());
+		LVConvertModel(*model_in, *mdl);
 
 		double label = predict(mdl.get(), reinterpret_cast<feature_node*>((*x_in)->elt));
 
@@ -187,9 +199,21 @@ double LVlinear_predict(lvError *lvErr, const struct LVlinear_model *model_in, c
 
 double LVlinear_predict_values(lvError *lvErr, const LVlinear_model  *model_in, const LVArray_Hdl<LVlinear_node> x_in, LVArray_Hdl<double> dec_values_out){
 	try{
+		// Input validation: Uninitialized model
+		if (model_in == nullptr || model_in->w == nullptr || (*model_in->w)->dimSize == 0)
+			throw LVException(__FILE__, __LINE__, "Uninitialized model passed to liblinear_predict_values.");
+
+		// Input validation: Empty feature vector
+		if (x_in == nullptr || (*x_in)->dimSize == 0)
+			throw LVException(__FILE__, __LINE__, "Empty feature vector passed to liblinear_predict_values.");
+
+		// Input validation: Final index -1?
+		if ((*x_in)->elt[(*x_in)->dimSize - 1].index != -1)
+			throw LVException(__FILE__, __LINE__, "The index of the last element of the feature vector needs to be -1 (liblinear_predict_values).");
+
 		// Convert LVsvm_model to svm_model
 		auto mdl = std::make_unique<model>();
-		LVConvertModel(model_in, mdl.get());
+		LVConvertModel(*model_in, *mdl);
 
 		int nr_class = model_in->nr_class;
 		int solver = (model_in->param).solver_type;
@@ -234,9 +258,21 @@ double LVlinear_predict_values(lvError *lvErr, const LVlinear_model  *model_in, 
 
 double LVlinear_predict_probability(lvError *lvErr, const LVlinear_model  *model_in, const LVArray_Hdl<LVlinear_node> x_in, LVArray_Hdl<double> prob_estimates_out){
 	try{
+		// Input validation: Uninitialized model
+		if (model_in == nullptr || model_in->w == nullptr || (*model_in->w)->dimSize == 0)
+			throw LVException(__FILE__, __LINE__, "Uninitialized model passed to liblinear_predict_probability.");
+
+		// Input validation: Empty feature vector
+		if (x_in == nullptr || (*x_in)->dimSize == 0)
+			throw LVException(__FILE__, __LINE__, "Empty feature vector passed to liblinear_predict_probability.");
+
+		// Input validation: Final index -1?
+		if ((*x_in)->elt[(*x_in)->dimSize - 1].index != -1)
+			throw LVException(__FILE__, __LINE__, "The index of the last element of the feature vector needs to be -1 (liblinear_predict_probability).");
+
 		// Convert LVsvm_model to svm_model
 		auto mdl = std::make_unique<model>();
-		LVConvertModel(model_in, mdl.get());
+		LVConvertModel(*model_in, *mdl);
 
 		// Check probability model
 		int valid_probability = check_probability_model(mdl.get());
@@ -305,93 +341,93 @@ void LVlinear_delete_logging_userevent(lvError *lvErr, LVUserEventRef *loggingUs
 
 //-- Helper functions
 
-void LVConvertParameter(const LVlinear_parameter *param_in, parameter *param_out){
-	param_out->solver_type = param_in->solver_type;
-	param_out->eps = param_in->eps;
-	param_out->C = param_in->C;
-	param_out->p = param_in->p;
-	param_out->init_sol = nullptr; // TODO: add support for warm-start
+void LVConvertParameter(const LVlinear_parameter &param_in, parameter &param_out){
+	param_out.solver_type = param_in.solver_type;
+	param_out.eps = param_in.eps;
+	param_out.C = param_in.C;
+	param_out.p = param_in.p;
+	param_out.init_sol = nullptr; // TODO: add support for warm-start
 
 	// Weight label
-	if (param_in->weight_label != nullptr && param_in->weight != nullptr){
-		if ((*(param_in->weight))->dimSize != (*(param_in->weight_label))->dimSize)
+	if (param_in.weight_label != nullptr && param_in.weight != nullptr){
+		if ((*(param_in.weight))->dimSize != (*(param_in.weight_label))->dimSize)
 			throw LVException(__FILE__, __LINE__, "Parameter error: Number of elements in weight_label and weight does not match.");
 
-		if ((*(param_in->weight_label))->dimSize > 0)
-			param_out->weight_label = (*(param_in->weight_label))->elt;
+		if ((*(param_in.weight_label))->dimSize > 0)
+			param_out.weight_label = (*(param_in.weight_label))->elt;
 		else
-			param_out->weight_label = nullptr;
+			param_out.weight_label = nullptr;
 
 		// Weight
-		if ((*(param_in->weight))->dimSize > 0){
-			param_out->weight = (*(param_in->weight))->elt;
-			param_out->nr_weight = (*(param_in->weight))->dimSize;
+		if ((*(param_in.weight))->dimSize > 0){
+			param_out.weight = (*(param_in.weight))->elt;
+			param_out.nr_weight = (*(param_in.weight))->dimSize;
 		}
 		else{
-			param_out->weight = nullptr;
-			param_out->nr_weight = 0;
+			param_out.weight = nullptr;
+			param_out.nr_weight = 0;
 		}
 	}
 }
 
-void LVConvertModel(const LVlinear_model *model_in, model *model_out){
+void LVConvertModel(const LVlinear_model &model_in, model &model_out){
 	// Assign the parameters
-	LVConvertParameter(&model_in->param, &model_out->param);
+	LVConvertParameter(model_in.param, model_out.param);
 
 	// Copy assignments
-	model_out->nr_class = model_in->nr_class;
-	model_out->nr_feature = model_in->nr_feature;
-	model_out->bias = model_in->bias;
+	model_out.nr_class = model_in.nr_class;
+	model_out.nr_feature = model_in.nr_feature;
+	model_out.bias = model_in.bias;
 
 	// w
-	if ((*(model_in->w))->dimSize > 0)
-		model_out->w = (*(model_in->w))->elt;
+	if ((*(model_in.w))->dimSize > 0)
+		model_out.w = (*(model_in.w))->elt;
 	else
-		model_out->w = nullptr;
+		model_out.w = nullptr;
 
 	// label
-	if ((*(model_in->label))->dimSize > 0)
-		model_out->label = (*(model_in->label))->elt;
+	if ((*(model_in.label))->dimSize > 0)
+		model_out.label = (*(model_in.label))->elt;
 	else
-		model_out->label = nullptr;
+		model_out.label = nullptr;
 }
 
-void LVConvertModel(const model *model_in, LVlinear_model *model_out){
+void LVConvertModel(const model &model_in, LVlinear_model &model_out){
 	// Convert svm_model to LVsvm_model
-	model_out->nr_class = model_in->nr_class;
-	model_out->nr_feature = model_in->nr_feature;
-	model_out->bias = model_in->bias;
-	int nr_class = model_in->nr_class;
-	int nr_feature = model_in->nr_feature;
+	model_out.nr_class = model_in.nr_class;
+	model_out.nr_feature = model_in.nr_feature;
+	model_out.bias = model_in.bias;
+	int nr_class = model_in.nr_class;
+	int nr_feature = model_in.nr_feature;
 
 	// Label
-	if (model_in->label != nullptr){
-		LVResizeNumericArrayHandle(model_out->label, nr_class);
-		MoveBlock(model_in->label, (*(model_out->label))->elt, nr_class * sizeof(int32_t));
-		(*model_out->label)->dimSize = model_in->nr_class;
+	if (model_in.label != nullptr){
+		LVResizeNumericArrayHandle(model_out.label, nr_class);
+		MoveBlock(model_in.label, (*(model_out.label))->elt, nr_class * sizeof(int32_t));
+		(*model_out.label)->dimSize = model_in.nr_class;
 	}
 	else{
-		(*model_out->label)->dimSize = 0;
+		(*model_out.label)->dimSize = 0;
 	}
 
 	// n is equal to nr_feature, incremented if bias is present
 	int n = nr_feature;
-	if (model_in->bias >= 0)
+	if (model_in.bias >= 0)
 		n++;
 
 	// nr_w is equal to nr_class with one exception
 	int nr_w;
-	if (model_in->nr_class == 2 && model_in->param.solver_type != MCSVM_CS)
+	if (model_in.nr_class == 2 && model_in.param.solver_type != MCSVM_CS)
 		nr_w = 1;
 	else
-		nr_w = model_in->nr_class;
+		nr_w = model_in.nr_class;
 
-	if (model_in->w != nullptr){
-		LVResizeNumericArrayHandle(model_out->w, n*nr_w);
-		MoveBlock(model_in->w, (*(model_out->w))->elt, nr_w * n * sizeof(double));
-		(*model_out->w)->dimSize = nr_w*n;
+	if (model_in.w != nullptr){
+		LVResizeNumericArrayHandle(model_out.w, n*nr_w);
+		MoveBlock(model_in.w, (*(model_out.w))->elt, nr_w * n * sizeof(double));
+		(*model_out.w)->dimSize = nr_w*n;
 	}
 	else{
-		(*model_out->w)->dimSize = 0;
+		(*model_out.w)->dimSize = 0;
 	}
 }

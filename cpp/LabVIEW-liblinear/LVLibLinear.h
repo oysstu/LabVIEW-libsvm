@@ -103,10 +103,10 @@ LVLIBLINEAR_API void CALLCONV LVlinear_delete_logging_userevent(lvError *lvErr, 
 
 // Assigns the cluster from LabVIEW to a svm_parameter struct
 // Arrays are not copied
-void LVConvertParameter(const LVlinear_parameter *param_in, parameter *param_out);
+void LVConvertParameter(const LVlinear_parameter &param_in, parameter &param_out);
 
 // Assigns the LVsvm_model cluster from LabVIEW to svm_model
 // Arrays are not copied
-void LVConvertModel(const LVlinear_model *model_in, model *model_out);
+void LVConvertModel(const LVlinear_model &model_in, model &model_out);
 
-void LVConvertModel(const model *model_in, LVlinear_model *model_out);
+void LVConvertModel(const model &model_in, LVlinear_model &model_out);
