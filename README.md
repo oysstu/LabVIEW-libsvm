@@ -11,7 +11,7 @@ Sparse is only necessary for datasets consisting of an extremely large number of
 ### Installation
 **The easiest way to install the library is through the pre-built VIPM package found under releases.** This installs both the VIs and binary components to user.lib and adds an entry in the LabVIEW palette. Alternatively, one can download the project itself and the binaries under releases corresponding to the target bitness.
 
-The library is devloped in LabVIEW 2015, but the distributed VIPM packages are compatible with LabVIEW 2013.
+The library is developed in LabVIEW 2015, but the distributed VIPM packages are compatible with LabVIEW 2013.
 
 ### Dependencies
 * libsvm and liblinear binaries (included in the VIPM package or through the zip files)
