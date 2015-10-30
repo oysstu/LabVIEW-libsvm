@@ -108,6 +108,14 @@ LVLIBLINEAR_API void CALLCONV LVlinear_set_logging_userevent(lvError *lvErr, LVU
 LVLIBLINEAR_API void CALLCONV LVlinear_get_logging_userevent(lvError *lvErr, LVUserEventRef *loggingUserEvent_out);
 LVLIBLINEAR_API void CALLCONV LVlinear_delete_logging_userevent(lvError *lvErr, LVUserEventRef *loggingUserEvent_out);
 
+//
+//-- File operations
+//
+
+LVLIBLINEAR_API void CALLCONV LVsvm_save_model(lvError *lvErr, const char *path_in, const LVlinear_model *model_in);
+
+LVLIBLINEAR_API void CALLCONV LVsvm_load_model(lvError *lvErr, const char *path_in, LVlinear_model *model_out);
+
 //-- Helper functions
 
 // Assigns the cluster from LabVIEW to a svm_parameter struct

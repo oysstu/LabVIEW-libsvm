@@ -7,6 +7,7 @@
 #include <memory>
 #include <cmath>
 #include <climits>
+#include <errno.h>
 
 #include <extcode.h>
 #include <linear.h>
@@ -80,21 +81,30 @@ void LVlinear_train(lvError *lvErr, const LVlinear_problem *prob_in, const LVlin
 		free_model_content(result);
 	}
 	catch (LVException &ex) {
-		ex.returnError(lvErr);
-		// To avoid LabVIEW reading and utilizing bad memory, the dimension sizes of arrays is set to zero
 		(*(model_out->label))->dimSize = 0;
 		(*(model_out->w))->dimSize = 0;
+		(*(model_out->param).weight)->dimSize = 0;
+		(*(model_out->param).weight_label)->dimSize = 0;
+
+		ex.returnError(lvErr);
 	}
 	catch (std::exception &ex) {
-		LVException::returnStdException(lvErr, __FILE__, __LINE__, ex);
 		(*(model_out->label))->dimSize = 0;
 		(*(model_out->w))->dimSize = 0;
+		(*(model_out->param).weight)->dimSize = 0;
+		(*(model_out->param).weight_label)->dimSize = 0;
+
+		LVException::returnStdException(lvErr, __FILE__, __LINE__, ex);
 	}
 	catch (...) {
-		LVException ex(__FILE__, __LINE__, "Unknown exception has occurred");
-		ex.returnError(lvErr);
 		(*(model_out->label))->dimSize = 0;
 		(*(model_out->w))->dimSize = 0;
+		(*(model_out->param).weight)->dimSize = 0;
+		(*(model_out->param).weight_label)->dimSize = 0;
+
+		LVException ex(__FILE__, __LINE__, "Unknown exception has occurred");
+		ex.returnError(lvErr);
+
 	}
 }
 
@@ -359,7 +369,139 @@ void LVlinear_delete_logging_userevent(lvError *lvErr, LVUserEventRef *loggingUs
 	loggingUsrEv = nullptr;
 }
 
+//
+//-- File operations
+//
+
+void LVsvm_save_model(lvError *lvErr, const char *path_in, const LVlinear_model *model_in){
+	try{
+		errno = 0;
+
+		// Convert LVsvm_model to svm_model
+		auto mdl = std::make_unique<model>();
+		LVConvertModel(*model_in, *mdl);
+
+		int err = save_model(path_in, mdl.get());
+
+		if (err == -1){
+			// Allocate room for output error message (truncated if buffer is too small)
+			const size_t bufSz = 256;
+			char buf[bufSz] = "";
+			std::string errstr;
+
+#if defined(_WIN32) || defined(_WIN64)
+			if (strerror_s(buf, bufSz, errno) != 0)
+				errstr = buf;
+			else
+				errstr = "Unknown error";
+#elif (_POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600) && ! _GNU_SOURCE
+			if (strerror_r(errno, buf, bufSz) != 0)
+				errstr = buf;
+			else
+				errstr = "Unknown error";
+#else
+			char* gnuerr = strerror_r(errno, buf, bufSz);
+			if (gnuerr != nullptr)
+				errstr = gnuerr;
+			else
+				errstr = "Unknown error";
+#endif
+
+			errno = 0;
+
+			throw LVException(__FILE__, __LINE__, "Model load operation failed (" + errstr + ").");
+		}
+	}
+	catch (LVException &ex) {
+		ex.returnError(lvErr);
+	}
+	catch (std::exception &ex) {
+		LVException::returnStdException(lvErr, __FILE__, __LINE__, ex);
+	}
+	catch (...) {
+		LVException ex(__FILE__, __LINE__, "Unknown exception has occurred");
+		ex.returnError(lvErr);
+	}
+}
+
+void LVsvm_load_model(lvError *lvErr, const char *path_in, LVlinear_model *model_out){
+	try{
+		errno = 0;
+
+		model *mdl = load_model(path_in);
+
+		if (mdl == nullptr){
+			// Allocate room for output error message (truncated if buffer is too small)
+			const size_t bufSz = 256;
+			char buf[bufSz] = "";
+			std::string errstr;
+
+#if defined(_WIN32) || defined(_WIN64)
+			if (strerror_s(buf, bufSz, errno) != 0)
+				errstr = buf;
+			else
+				errstr = "Unknown error";
+#elif (_POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600) && ! _GNU_SOURCE
+			if (strerror_r(errno, buf, bufSz) != 0)
+				errstr = buf;
+			else
+				errstr = "Unknown error";
+#else
+			char* gnuerr = strerror_r(errno, buf, bufSz);
+			if (gnuerr != nullptr)
+				errstr = gnuerr;
+			else
+				errstr = "Unknown error";
+#endif
+
+			errno = 0;
+
+			throw LVException(__FILE__, __LINE__, "Model load operation failed (" + errstr + ").");
+		}
+		else{
+			// liblinear returns uninitialized values for the parameters (except solver type)
+			(mdl->param).C = 0;
+			(mdl->param).eps = 0;
+			(mdl->param).init_sol = nullptr;
+			(mdl->param).nr_weight = 0;
+			(mdl->param).p = 0;
+			(mdl->param).weight = nullptr;
+			(mdl->param).weight_label = nullptr;
+
+			LVConvertModel(*mdl, *model_out);
+			free_model_content(mdl);
+		}
+	}
+	catch (LVException &ex) {
+		(*(model_out->label))->dimSize = 0;
+		(*(model_out->w))->dimSize = 0;
+		(*(model_out->param).weight)->dimSize = 0;
+		(*(model_out->param).weight_label)->dimSize = 0;
+
+		ex.returnError(lvErr);
+	}
+	catch (std::exception &ex) {
+		(*(model_out->label))->dimSize = 0;
+		(*(model_out->w))->dimSize = 0;
+		(*(model_out->param).weight)->dimSize = 0;
+		(*(model_out->param).weight_label)->dimSize = 0;
+
+		LVException::returnStdException(lvErr, __FILE__, __LINE__, ex);
+	}
+	catch (...) {
+		(*(model_out->label))->dimSize = 0;
+		(*(model_out->w))->dimSize = 0;
+		(*(model_out->param).weight)->dimSize = 0;
+		(*(model_out->param).weight_label)->dimSize = 0;
+
+		LVException ex(__FILE__, __LINE__, "Unknown exception has occurred");
+		ex.returnError(lvErr);
+	}
+}
+
+//
 //-- Helper functions
+//
 
 void LVConvertParameter(const LVlinear_parameter &param_in, parameter &param_out){
 	param_out.solver_type = param_in.solver_type;
