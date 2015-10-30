@@ -7,7 +7,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LabVIEW-liblinear", "LabVIE
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LabVIEW-libsvm-dense", "LabVIEW-libsvm-dense\LabVIEW-libsvm-dense.vcxproj", "{8156E09A-4BFB-49F0-8A6C-E3329B1893AF}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LabVIEW-libsvm", "LabVIEW-libsvm\LVLibSVM.vcxproj", "{7D315BB9-6F90-482F-B7E4-5D8EF1292894}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LabVIEW-libsvm", "LabVIEW-libsvm\LabVIEW-libsvm.vcxproj", "{7D315BB9-6F90-482F-B7E4-5D8EF1292894}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LabVIEW-common", "LabVIEW-common\LabVIEW-common.vcxproj", "{DB2DFDA1-CC14-460C-9B60-D3F8253F4ABD}"
 EndProject

@@ -70,7 +70,7 @@ struct LVsvm_model {
 	LVArray_Hdl<int32_t> nSV;
 };
 
-
+#include "lv_epilog.h"
 
 //
 //-- Compile-time size checks
@@ -84,8 +84,6 @@ struct _LVsvm_one_element_cluster {
 	LVArray_Hdl<LVsvm_node> ClusterArr;
 };
 static_assert (sizeof(LVArray_Hdl<LVsvm_node>) == sizeof(_LVsvm_one_element_cluster), "Byte packing in one-element cluster present");
-
-#include "lv_epilog.h"
 
 #pragma endregion
 
@@ -113,7 +111,6 @@ static std::atomic<LVUserEventRef *> loggingUsrEv(nullptr);
 #endif
 
 
-
 LVLIBSVM_API int32_t	CALLCONV GetLibSVMVersion() { return LIBSVM_VERSION; }
 
 LVLIBSVM_API void		CALLCONV LVsvm_train(lvError *lvErr, const LVsvm_problem *prob_in, const LVsvm_parameter *param_in, LVsvm_model * model_out);
@@ -130,8 +127,8 @@ LVLIBSVM_API double		CALLCONV LVsvm_predict_probability(lvError *lvErr, const LV
 //-- File operations
 //
 
-// File saving/loading should be done through the LabVIEW API, these are included for interoperability
 LVLIBSVM_API void		CALLCONV LVsvm_save_model(lvError *lvErr, const char *path_in, const LVsvm_model *model_in);
+
 LVLIBSVM_API void		CALLCONV LVsvm_load_model(lvError *lvErr, const char *path_in, LVsvm_model *model_out);
 
 //

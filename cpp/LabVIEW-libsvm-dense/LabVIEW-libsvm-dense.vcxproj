@@ -163,12 +163,12 @@
     <ClInclude Include="..\LabVIEW-common\LVException.h" />
     <ClInclude Include="..\LabVIEW-common\LVTypeDecl.h" />
     <ClInclude Include="..\LabVIEW-common\LVUtility.h" />
-    <ClInclude Include="LVLibSVM-dense.h" />
+    <ClInclude Include="LabVIEW-libsvm-dense.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\LabVIEW-common\LVException.cpp" />
     <ClCompile Include="..\LabVIEW-common\LVUtility.cpp" />
-    <ClCompile Include="LVLibSVM-dense.cpp" />
+    <ClCompile Include="LabVIEW-libsvm-dense.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Paths.props" />

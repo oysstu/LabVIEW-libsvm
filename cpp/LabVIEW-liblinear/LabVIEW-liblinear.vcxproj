@@ -158,13 +158,13 @@
   <ItemGroup>
     <ClCompile Include="..\LabVIEW-common\LVException.cpp" />
     <ClCompile Include="..\LabVIEW-common\LVUtility.cpp" />
-    <ClCompile Include="LVLibLinear.cpp" />
+    <ClCompile Include="LabVIEW-liblinear.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\LabVIEW-common\LVException.h" />
     <ClInclude Include="..\LabVIEW-common\LVTypeDecl.h" />
     <ClInclude Include="..\LabVIEW-common\LVUtility.h" />
-    <ClInclude Include="LVLibLinear.h" />
+    <ClInclude Include="LabVIEW-liblinear.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Paths.props" />
