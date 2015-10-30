@@ -19,10 +19,13 @@
 #pragma region TypeDefs
 #include <lv_prolog.h>
 
+// Double is generally 64-bit aligned on 64-bit, and 32-bit aligned on 32-bit
+// Win32 is an exception, where double is 64-bit aligned even on 32-bit
+// LabVIEW uses 1-byte padding on 32bit windows, and padding is inserted to be able to cast directly to svm_node
 struct LVlinear_node
 {
 	int32_t index;
-#ifndef _WIN64
+#if defined(_WIN32) && !defined(_WIN64)
 	int32_t padding; // Insert padding on 32-bit windows
 #endif
 	double value;
@@ -77,8 +80,14 @@ static std::atomic<LVUserEventRef *> loggingUsrEv(nullptr);
 //
 
 // DLL Export, C API and call convention
+#if defined(_WIN32) || defined(_WIN64)
 #define LVLIBLINEAR_API extern "C" __declspec(dllexport)
 #define CALLCONV __cdecl
+#else
+#define LVLIBLINEAR_API extern "C"
+//#define CALLCONV __attribute__((__cdecl__))
+#define CALLCONV
+#endif
 
 LVLIBLINEAR_API int32_t	CALLCONV GetLibLinearVersion() { return LIBLINEAR_VERSION; }
 

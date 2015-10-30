@@ -1,12 +1,16 @@
-#include "LVLibSVM-dense.h"
+#include "LabVIEW-libsvm-dense.h"
 
 #include <stdint.h>
 #include <exception>
 #include <string>
+#include <cstring>
 #include <memory>
-#include <svm.h>
 #include <errno.h>
+#include <cmath>
+#include <climits>
+
 #include <extcode.h>
+#include <svm.h>
 
 #include "LVTypeDecl.h"
 #include "LVUtility.h"
@@ -26,6 +30,14 @@ void LVsvm_train(lvError *lvErr, const LVsvm_problem *prob_in, const LVsvm_param
 		uint32_t n_vectors = (*prob_in->x)->dimSize;
 		uint32_t n_features = (*(*prob_in->x)->elt[0])->dimSize;
 
+		// Input validation: Feature vector too large (exceeds max signed int)
+		if(n_features > INT_MAX)
+			throw LVException(__FILE__, __LINE__, "Feature vector too large (grater than " + std::to_string(INT_MAX) + ")");
+
+		// Input validation: Number of vectors too large (exceeds max signed int)
+		if(n_vectors > INT_MAX)
+			throw LVException(__FILE__, __LINE__, "Number of vectors too large (grater than " + std::to_string(INT_MAX) + ")");
+
 		// Input verification: Problem dimensions (n_vectors equals n_labels)
 		if (n_vectors != (*(prob_in->y))->dimSize)
 			throw LVException(__FILE__, __LINE__, "The problem must have an equal number of labels and feature vectors (x and y).");
@@ -39,7 +51,6 @@ void LVsvm_train(lvError *lvErr, const LVsvm_problem *prob_in, const LVsvm_param
 		auto x = std::make_unique<svm_node[]>(n_vectors);
 		prob->x = x.get();
 
-		auto x_in = prob_in->x;
 		for (unsigned int i = 0; i < n_vectors; i++) {
 			// Disallow feature vectors of different size, they are truncated in the dot-product anyway.
 			if ((*(*(prob_in->x))->elt[i])->dimSize != n_features)
@@ -124,6 +135,14 @@ void LVsvm_cross_validation(lvError *lvErr, const LVsvm_problem *prob_in, const 
 		uint32_t n_vectors = (*prob_in->x)->dimSize;
 		uint32_t n_features = (*(*prob_in->x)->elt[0])->dimSize;
 
+		// Input validation: Feature vector too large (exceeds max signed int)
+		if(n_features > INT_MAX)
+			throw LVException(__FILE__, __LINE__, "Feature vector too large (grater than " + std::to_string(INT_MAX) + ")");
+
+		// Input validation: Number of vectors too large (exceeds max signed int)
+		if(n_vectors > INT_MAX)
+			throw LVException(__FILE__, __LINE__, "Number of vectors too large (grater than " + std::to_string(INT_MAX) + ")");
+
 		// Input verification: Problem dimensions
 		if (n_vectors != (*(prob_in->y))->dimSize)
 			throw LVException(__FILE__, __LINE__, "The problem must have an equal number of labels and feature vectors (x and y).");
@@ -137,13 +156,12 @@ void LVsvm_cross_validation(lvError *lvErr, const LVsvm_problem *prob_in, const 
 		auto x = std::make_unique<svm_node[]>(n_vectors);
 		prob->x = x.get();
 
-		auto x_in = prob_in->x;
 		for (unsigned int i = 0; i < n_vectors; i++) {
 			// Disallow feature vectors of different size, they are truncated in the dot-product anyway.
 			if ((*(*(prob_in->x))->elt[i])->dimSize != n_features)
 				throw LVException(__FILE__, __LINE__, "Feature vector #" + std::to_string(i) + " differs in length from the rest.");
 
-			x[i].dim = n_features;
+			x[i].dim = static_cast<int>(n_features);
 			x[i].values = (*(*(prob_in->x))->elt[i])->elt;
 		}
 
@@ -188,13 +206,17 @@ double	LVsvm_predict(lvError *lvErr, const struct LVsvm_model *model_in, const L
 		if (x_in == nullptr || (*x_in)->dimSize == 0)
 			throw LVException(__FILE__, __LINE__, "Empty feature vector passed to libsvmdense_predict.");
 
+		// Input validation: Feature vector too large (exceeds max signed int)
+		if((*x_in)->dimSize > INT_MAX)
+			throw LVException(__FILE__, __LINE__, "Feature vector too large (grater than " + std::to_string(INT_MAX) + ")");
+
 		// Convert LVsvm_model to svm_model
 		auto model = std::make_unique<svm_model>();
 		std::unique_ptr<svm_node[]> SV;
 		std::unique_ptr<double*[]> sv_coef;
 		LVConvertModel(*model_in, *model, SV, sv_coef);
 
-		svm_node node = { (*x_in)->dimSize, (*x_in)->elt };
+		svm_node node = { static_cast<int>((*x_in)->dimSize), (*x_in)->elt };
 		double label = svm_predict(model.get(), &node);
 
 		return label;
@@ -225,6 +247,10 @@ double	LVsvm_predict_values(lvError *lvErr, const LVsvm_model *model_in, const L
 		if (x_in == nullptr || (*x_in)->dimSize == 0)
 			throw LVException(__FILE__, __LINE__, "Empty feature vector passed to libsvmdense_predict_values.");
 
+		// Input validation: Feature vector too large (exceeds max signed int)
+		if((*x_in)->dimSize > INT_MAX)
+			throw LVException(__FILE__, __LINE__, "Feature vector too large (grater than " + std::to_string(INT_MAX) + ")");
+
 		// Convert LVsvm_model to svm_model
 		auto model = std::make_unique<svm_model>();
 		std::unique_ptr<svm_node[]> SV;
@@ -244,7 +270,7 @@ double	LVsvm_predict_values(lvError *lvErr, const LVsvm_model *model_in, const L
 			(*dec_values_out)->dimSize = static_cast<uint32_t>(n_pairs);
 		}
 
-		svm_node node = { (*x_in)->dimSize, (*x_in)->elt };
+		svm_node node = { static_cast<int>((*x_in)->dimSize), (*x_in)->elt };
 		double predicted_label = svm_predict_values(model.get(), &node, (*dec_values_out)->elt);
 
 		return predicted_label;
@@ -278,6 +304,10 @@ double	LVsvm_predict_probability(lvError *lvErr, const LVsvm_model *model_in, co
 		if (x_in == nullptr || (*x_in)->dimSize == 0)
 			throw LVException(__FILE__, __LINE__, "Empty feature vector passed to libsvmdense_predict_probability.");
 
+		// Input validation: Feature vector too large (exceeds max signed int)
+		if((*x_in)->dimSize > INT_MAX)
+			throw LVException(__FILE__, __LINE__, "Feature vector too large (grater than " + std::to_string(INT_MAX) + ")");
+
 		// Convert LVsvm_model to svm_model
 		auto model = std::make_unique<svm_model>();
 		std::unique_ptr<svm_node[]> SV;
@@ -300,7 +330,7 @@ double	LVsvm_predict_probability(lvError *lvErr, const LVsvm_model *model_in, co
 			(*prob_estimates_out)->dimSize = 0;
 		}
 
-		svm_node node = { (*x_in)->dimSize, (*x_in)->elt };
+		svm_node node = { static_cast<int>((*x_in)->dimSize), (*x_in)->elt };
 		double highest_prob_label = svm_predict_probability(model.get(), &node, (*prob_estimates_out)->elt);
 
 		return highest_prob_label;
@@ -620,8 +650,10 @@ void LVsvm_delete_logging_userevent(lvError *lvErr, LVUserEventRef *loggingUserE
 //-- File saving/loading
 //
 
-void LVsvm_save_model(lvError *lvErr, const char *path_in, const LVsvm_model *model_in) {
-	try {
+void LVsvm_save_model(lvError *lvErr, const char *path_in, const LVsvm_model *model_in){
+	try{
+        errno = 0;
+
 		// Convert LVsvm_model to svm_model
 		auto model = std::make_unique<svm_model>();
 		std::unique_ptr<svm_node[]> SV;
@@ -629,12 +661,34 @@ void LVsvm_save_model(lvError *lvErr, const char *path_in, const LVsvm_model *mo
 		LVConvertModel(*model_in, *model, SV, sv_coef);
 
 		int err = svm_save_model(path_in, model.get());
-		if (err == -1) {
-			// Allocate room for output error message (truncated if buffer is too small)
-			char buf[64];
-			strerror_s(buf, 64, errno);
-			errno = 0;
-			throw LVException(__FILE__, __LINE__, "Model save operation failed (" + std::string(buf) + ").");
+
+		if (err == -1){
+            // Allocate room for output error message (truncated if buffer is too small)
+            const size_t bufSz = 256;
+            char buf[bufSz] = "";
+            std::string errstr;
+
+		#if defined(_WIN32) || defined(_WIN64)
+			if(strerror_s(buf, bufSz, errno) != 0)
+                errstr = buf;
+            else
+                errstr = "Unknown error";
+        #elif (_POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600) && ! _GNU_SOURCE
+            if(strerror_r(errno, buf, bufSz) != 0)
+                errstr = buf;
+            else
+                errstr = "Unknown error";
+        #else
+            char* gnuerr = strerror_r(errno, buf, bufSz);
+            if(gnuerr != nullptr)
+                errstr = gnuerr;
+            else
+                errstr = "Unknown error";
+        #endif
+
+        errno = 0;
+
+        throw LVException(__FILE__, __LINE__, "Model load operation failed (" + errstr + ").");
 		}
 	}
 	catch (LVException &ex) {
@@ -649,21 +703,44 @@ void LVsvm_save_model(lvError *lvErr, const char *path_in, const LVsvm_model *mo
 	}
 }
 
-void LVsvm_load_model(lvError *lvErr, const char *path_in, LVsvm_model *model_out) {
-	try {
+void LVsvm_load_model(lvError *lvErr, const char *path_in, LVsvm_model *model_out){
+	try{
+        errno = 0;
+
 		svm_model *model = svm_load_model(path_in);
 
-		// libsvm returns uninitialized values for the parameters (dick move)
-		(model->param) = { 0 };
+		if (model == nullptr){
+            // Allocate room for output error message (truncated if buffer is too small)
+            const size_t bufSz = 256;
+            char buf[bufSz] = "";
+            std::string errstr;
 
-		if (model == nullptr) {
-			// Allocate room for output error message (truncated if buffer is too small)
-			char buf[64];
-			strerror_s(buf, 64, errno);
-			errno = 0;
-			throw LVException(__FILE__, __LINE__, "Model load operation failed (" + std::string(buf) + ").");
+		#if defined(_WIN32) || defined(_WIN64)
+			if(strerror_s(buf, bufSz, errno) != 0)
+                errstr = buf;
+            else
+                errstr = "Unknown error";
+        #elif (_POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600) && ! _GNU_SOURCE
+            if(strerror_r(errno, buf, bufSz) != 0)
+                errstr = buf;
+            else
+                errstr = "Unknown error";
+        #else
+            char* gnuerr = strerror_r(errno, buf, bufSz);
+            if(gnuerr != nullptr)
+                errstr = gnuerr;
+            else
+                errstr = "Unknown error";
+        #endif
+
+        errno = 0;
+
+        throw LVException(__FILE__, __LINE__, "Model load operation failed (" + errstr + ").");
 		}
-		else {
+		else{
+            // libsvm returns uninitialized values for the parameters
+            (model->param) = { 0 };
+
 			LVConvertModel(*model, *model_out);
 			svm_free_model_content(model);
 		}

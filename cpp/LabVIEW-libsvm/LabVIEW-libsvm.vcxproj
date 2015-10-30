@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{7D315BB9-6F90-482F-B7E4-5D8EF1292894}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>LVLibSVM</RootNamespace>
+    <RootNamespace>LabVIEW-libsvm</RootNamespace>
     <ProjectName>LabVIEW-libsvm</ProjectName>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -143,7 +143,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;LVLIBSVM_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(LIBSVM_PATH);..\LabVIEW-common;$(LABVIEW32_PATH)\cintools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <EnablePREfast>false</EnablePREfast>
     </ClCompile>
@@ -165,7 +165,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;LVLIBSVM_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(LIBSVM_PATH);..\LabVIEW-common;$(LABVIEW64_PATH)\cintools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <EnablePREfast>false</EnablePREfast>
     </ClCompile>
@@ -186,12 +186,12 @@
     <ClInclude Include="..\LabVIEW-common\LVException.h" />
     <ClInclude Include="..\LabVIEW-common\LVTypeDecl.h" />
     <ClInclude Include="..\LabVIEW-common\LVUtility.h" />
-    <ClInclude Include="LVLibSVM.h" />
+    <ClInclude Include="LabVIEW-libsvm.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\LabVIEW-common\LVException.cpp" />
     <ClCompile Include="..\LabVIEW-common\LVUtility.cpp" />
-    <ClCompile Include="LVLibSVM.cpp" />
+    <ClCompile Include="LabVIEW-libsvm.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Paths.props" />

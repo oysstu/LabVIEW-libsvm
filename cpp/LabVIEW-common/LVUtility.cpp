@@ -2,7 +2,11 @@
 #include "LVTypeDecl.h"
 #include "LVException.h"
 #include "extcode.h"
+#include <cstring>
+
+#if defined(_WIN32) || defined(_WIN64)
 #include <codecvt>
+#endif
 
 void LVWriteStringHandle(LStrHandle &strHandle, const char* c_str, size_t length) {
 	// Check if handle state is good.
@@ -40,13 +44,22 @@ void LVWriteStringHandle(LStrHandle &strHandle, std::string str) {
 	LVWriteStringHandle(strHandle, str.c_str(), str.length());
 }
 
-void LVWriteStringHandle(LStrHandle &strHandle, std::wstring wstr){
+
+
+void LVWriteStringHandle(LStrHandle &strHandle, std::wstring wstr){	
+#if defined(_WIN32) || defined(_WIN64)
 	// Setup converter
-	typedef std::codecvt_utf8<wchar_t> convert_type;
-	std::wstring_convert<convert_type, wchar_t> converter;
+	std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
 
 	// Use converter (.to_bytes: wstr->str, .from_bytes: str->wstr)
 	std::string converted_str = converter.to_bytes(wstr);
 
 	LVWriteStringHandle(strHandle, converted_str.c_str(), converted_str.length());
+#else
+	// gcc4.x does not yet support the above utilities, coming in gcc5
+	// Workarounds exist, but might as well wait for the c++11 implementation
+	throw LVException(__FILE__, __LINE__, "wstring conversion not implemented for g++");
+#endif
 }
+
+

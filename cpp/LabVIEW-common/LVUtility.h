@@ -9,6 +9,7 @@
 #include <extcode.h>
 
 #include "LVTypeDecl.h"
+#include "LVException.h"
 
 /* Useful extcode functions
 DSCheckHandle 		-Checks if a handle is valid.
@@ -44,31 +45,31 @@ enum LVTypecode
 
 // Function to return the correct typecode used in NumericArrayResize
 // TODO: Make more general using std:enable_if, std::is_signed/std::is_unsigned, std::is_integral along with size to determine typecode
-template<class T>	inline LVTypecode LVGetTypecode()	{ return LVTypecode::Unknown; };
-template<> inline LVTypecode LVGetTypecode<int8_t>()	{ return LVTypecode::I8; };
-template<> inline LVTypecode LVGetTypecode<int16_t>()	{ return LVTypecode::I16; };
-template<> inline LVTypecode LVGetTypecode<int32_t>()	{ return LVTypecode::I32; };
-template<> inline LVTypecode LVGetTypecode<int64_t>()	{ return LVTypecode::I64; };
-template<> inline LVTypecode LVGetTypecode<uint8_t>()	{ return LVTypecode::U8; };
-template<> inline LVTypecode LVGetTypecode<uint16_t>()	{ return LVTypecode::U16; };
-template<> inline LVTypecode LVGetTypecode<uint32_t>()	{ return LVTypecode::U32; };
-template<> inline LVTypecode LVGetTypecode<uint64_t>()	{ return LVTypecode::U64; };
-template<> inline LVTypecode LVGetTypecode<float32>()	{ return LVTypecode::SGL; };
-template<> inline LVTypecode LVGetTypecode<float64>()	{ return LVTypecode::DBL; };
-template<> inline LVTypecode LVGetTypecode<floatExt>()	{ return LVTypecode::EXT; };
-template<> inline LVTypecode LVGetTypecode<cmplx64>()	{ return LVTypecode::CSG; };
-template<> inline LVTypecode LVGetTypecode<cmplx128>()	{ return LVTypecode::CDB; };
-template<> inline LVTypecode LVGetTypecode<cmplxExt>()	{ return LVTypecode::CXT; };
+template<class T>	inline LVTypecode LVGetTypecode()	{ return LVTypecode::Unknown; }
+template<> inline LVTypecode LVGetTypecode<int8_t>()	{ return LVTypecode::I8; }
+template<> inline LVTypecode LVGetTypecode<int16_t>()	{ return LVTypecode::I16; }
+template<> inline LVTypecode LVGetTypecode<int32_t>()	{ return LVTypecode::I32; }
+template<> inline LVTypecode LVGetTypecode<int64_t>()	{ return LVTypecode::I64; }
+template<> inline LVTypecode LVGetTypecode<uint8_t>()	{ return LVTypecode::U8; }
+template<> inline LVTypecode LVGetTypecode<uint16_t>()	{ return LVTypecode::U16; }
+template<> inline LVTypecode LVGetTypecode<uint32_t>()	{ return LVTypecode::U32; }
+template<> inline LVTypecode LVGetTypecode<uint64_t>()	{ return LVTypecode::U64; }
+template<> inline LVTypecode LVGetTypecode<float32>()	{ return LVTypecode::SGL; }
+template<> inline LVTypecode LVGetTypecode<float64>()	{ return LVTypecode::DBL; }
+template<> inline LVTypecode LVGetTypecode<floatExt>()	{ return LVTypecode::EXT; }
+template<> inline LVTypecode LVGetTypecode<cmplx64>()	{ return LVTypecode::CSG; }
+template<> inline LVTypecode LVGetTypecode<cmplx128>()	{ return LVTypecode::CDB; }
+template<> inline LVTypecode LVGetTypecode<cmplxExt>()	{ return LVTypecode::CXT; }
 
 // Throw in the missing LabVIEW defines for good measure
-template<> inline LVTypecode LVGetTypecode<int8>()		{ return LVTypecode::I8; };
-//template<> inline LVTypecode LVGetTypecode<int16>()	{ return LVTypecode::I16; };
-template<> inline LVTypecode LVGetTypecode<int32>()		{ return LVTypecode::I32; };
-//template<> inline LVTypecode LVGetTypecode<int64>()	{ return LVTypecode::I64; };
-//template<> inline LVTypecode LVGetTypecode<uInt8>()	{ return LVTypecode::U8;  };
-//template<> inline LVTypecode LVGetTypecode<uInt16>()	{ return LVTypecode::U16; };
-template<> inline LVTypecode LVGetTypecode<uInt32>()	{ return LVTypecode::U32; };
-//template<> inline LVTypecode LVGetTypecode<uInt64>()	{ return LVTypecode::U64; };
+//template<> inline LVTypecode LVGetTypecode<int8>()		{ return LVTypecode::I8; }
+//template<> inline LVTypecode LVGetTypecode<int16>()	{ return LVTypecode::I16; }
+//template<> inline LVTypecode LVGetTypecode<int32>()		{ return LVTypecode::I32; }
+//template<> inline LVTypecode LVGetTypecode<int64>()	{ return LVTypecode::I64; }
+//template<> inline LVTypecode LVGetTypecode<uInt8>()	{ return LVTypecode::U8;  }
+//template<> inline LVTypecode LVGetTypecode<uInt16>()	{ return LVTypecode::U16; }
+//template<> inline LVTypecode LVGetTypecode<uInt32>()	{ return LVTypecode::U32; }
+//template<> inline LVTypecode LVGetTypecode<uInt64>()	{ return LVTypecode::U64; }
 
 /// <summary> Allocates room for the string in the handle and copies data over. </summary>
 /// <param name='strHandle'>A valid string handle.</param>

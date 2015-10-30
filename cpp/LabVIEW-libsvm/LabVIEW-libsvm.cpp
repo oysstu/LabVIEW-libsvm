@@ -1,15 +1,20 @@
-#include "LVLibSVM.h"
+#include "LabVIEW-libsvm.h"
 
 #include <stdint.h>
 #include <exception>
 #include <string>
+#include <cstring>
 #include <memory>
-#include <svm.h>
 #include <errno.h>
+#include <cmath>
+#include <climits>
 
-#include "LVTypeDecl.h"
-#include "LVUtility.h"
-#include "LVException.h"
+#include <extcode.h>
+#include <svm.h>
+
+#include <LVTypeDecl.h>
+#include <LVUtility.h>
+#include <LVException.h>
 
 void LVsvm_train(lvError *lvErr, const LVsvm_problem *prob_in, const LVsvm_parameter *param_in, LVsvm_model * model_out){
 	try{
@@ -21,10 +26,15 @@ void LVsvm_train(lvError *lvErr, const LVsvm_problem *prob_in, const LVsvm_param
 		if ((*(prob_in->x))->dimSize != (*(prob_in->y))->dimSize)
 			throw LVException(__FILE__, __LINE__, "The problem must have an equal number of labels and feature vectors (x and y).");
 
+		uint32_t nr_nodes = (*(prob_in->y))->dimSize;
+
+		// Input validation: Number of feature vectors too large (exceeds max signed int)
+		if(nr_nodes > INT_MAX)
+			throw LVException(__FILE__, __LINE__, "Number of feature vectors too large (grater than " + std::to_string(INT_MAX) + ")");
+
 		// Convert LVsvm_problem to svm_problem
 		auto prob = std::make_unique<svm_problem>();
-		uint32_t nr_nodes = (*(prob_in->y))->dimSize;
-		prob->l = nr_nodes;
+		prob->l = static_cast<int>(nr_nodes);
 		prob->y = (*(prob_in->y))->elt;
 
 		// Create and array of pointers (sparse datastructure)
@@ -38,7 +48,7 @@ void LVsvm_train(lvError *lvErr, const LVsvm_problem *prob_in, const LVsvm_param
 			x[i] = reinterpret_cast<svm_node*>((*xi_in_Hdl)->elt);
 
 			// Input validation: Final index -1?
-			if ((*xi_in_Hdl)->elt[(*x_in)->dimSize - 1].index != -1)
+			if ((*xi_in_Hdl)->elt[(*xi_in_Hdl)->dimSize - 1].index != -1)
 				throw LVException(__FILE__, __LINE__, "The index of the last element of each feature vector needs to be -1 (libsvm_train).");
 		}
 
@@ -114,9 +124,14 @@ void LVsvm_cross_validation(lvError *lvErr, const LVsvm_problem *prob_in, const 
 		if ((*(prob_in->x))->dimSize != (*(prob_in->y))->dimSize)
 			throw LVException(__FILE__, __LINE__, "The problem must have an equal number of labels and feature vectors (x and y).");
 
+		int32_t nr_nodes = (*(prob_in->y))->dimSize;
+
+		// Input validation: Number of feature vectors too large (exceeds max signed int)
+		if(nr_nodes > INT_MAX)
+			throw LVException(__FILE__, __LINE__, "Number of feature vectors too large (grater than " + std::to_string(INT_MAX) + ")");
+
 		// Convert LVsvm_problem to svm_problem
 		auto prob = std::make_unique<svm_problem>();
-		int32_t nr_nodes = (*(prob_in->y))->dimSize;
 		prob->l = nr_nodes; // The number of nodes
 		prob->y = (*(prob_in->y))->elt;
 
@@ -131,7 +146,7 @@ void LVsvm_cross_validation(lvError *lvErr, const LVsvm_problem *prob_in, const 
 			x[i] = reinterpret_cast<svm_node*>((*xi_in_Hdl)->elt);
 
 			// Input validation: Final index -1?
-			if ((*xi_in_Hdl)->elt[(*x_in)->dimSize - 1].index != -1)
+			if ((*xi_in_Hdl)->elt[(*xi_in_Hdl)->dimSize - 1].index != -1)
 				throw LVException(__FILE__, __LINE__, "The index of the last element of each feature vector needs to be -1 (libsvm_crossvalidation).");
 		}
 
@@ -325,7 +340,7 @@ double	LVsvm_predict_probability(lvError *lvErr, const LVsvm_model *model_in, co
 // -- Helper functions
 //
 
-void LVConvertParameter(const LVsvm_parameter &param_in, svm_parameter &param_out){	
+void LVConvertParameter(const LVsvm_parameter &param_in, svm_parameter &param_out){
 	//-- Copy assignments
 	param_out.svm_type = param_in.svm_type;
 	param_out.kernel_type = param_in.kernel_type;
@@ -381,7 +396,7 @@ void LVConvertParameter(const svm_parameter &param_in, LVsvm_parameter &param_ou
 			LVResizeNumericArrayHandle(param_out.weight, nr_weight);
 			MoveBlock(param_in.weight, (*param_out.weight)->elt, nr_weight * sizeof(double));
 			(*param_out.weight)->dimSize = nr_weight;
-		}	
+		}
 
 		if (param_in.weight_label != nullptr){
 			// Weight_label (number of support vectors for each class)
@@ -396,7 +411,7 @@ void LVConvertModel(const LVsvm_model &model_in, svm_model &model_out, std::uniq
 	// Input verification: Reject uninitialized models from LabVIEW
 	if (model_in.l <= 0 || model_in.nSV == nullptr || (*model_in.nSV)->dimSize == 0 || model_in.SV == nullptr || (*model_in.SV)->dimSize == 0)
 		throw LVException(__FILE__, __LINE__, "Uninitialized model passed to libsvm.");
-	
+
 	// Assign the parameters
 	LVConvertParameter(model_in.param, model_out.param);
 
@@ -531,7 +546,7 @@ void LVConvertModel(const svm_model &model_in, LVsvm_model &model_out){
 		MoveBlock(model_in.sv_indices, (*model_out.sv_indices)->elt, l * sizeof(int32_t));
 		(*model_out.sv_indices)->dimSize = l;
 	}
-	
+
 	// SV (support vectors) - total_sv (l) outer dim, variable inner dim
 	if (model_in.SV != nullptr){
 		LVResizeHandleArrayHandle(model_out.SV, l);
@@ -551,7 +566,7 @@ void LVConvertModel(const svm_model &model_in, LVsvm_model &model_out){
 				}
 
 				LVResizeCompositeArrayHandle((*model_out.SV)->elt[i], n_nodes);
-			
+
 				// Copy data over
 				MoveBlock(model_in.SV[i], (*(*model_out.SV)->elt[i])->elt, sizeof(LVsvm_node)*(n_nodes));
 				(*(*model_out.SV)->elt[i])->dimSize = static_cast<uint32_t>(n_nodes);
@@ -620,6 +635,8 @@ void LVsvm_delete_logging_userevent(lvError *lvErr, LVUserEventRef *loggingUserE
 
 void LVsvm_save_model(lvError *lvErr, const char *path_in, const LVsvm_model *model_in){
 	try{
+        errno = 0;
+
 		// Convert LVsvm_model to svm_model
 		auto model = std::make_unique<svm_model>();
 		std::unique_ptr<svm_node*[]> SV;
@@ -627,12 +644,34 @@ void LVsvm_save_model(lvError *lvErr, const char *path_in, const LVsvm_model *mo
 		LVConvertModel(*model_in, *model, SV, sv_coef);
 
 		int err = svm_save_model(path_in, model.get());
+
 		if (err == -1){
-			// Allocate room for output error message (truncated if buffer is too small)
-			char buf[64];
-			strerror_s(buf, 64, errno);
-			errno = 0;
-			throw LVException(__FILE__, __LINE__, "Model save operation failed (" + std::string(buf) + ").");
+            // Allocate room for output error message (truncated if buffer is too small)
+            const size_t bufSz = 256;
+            char buf[bufSz] = "";
+            std::string errstr;
+
+		#if defined(_WIN32) || defined(_WIN64)
+			if(strerror_s(buf, bufSz, errno) != 0)
+                errstr = buf;
+            else
+                errstr = "Unknown error";
+        #elif (_POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600) && ! _GNU_SOURCE
+            if(strerror_r(errno, buf, bufSz) != 0)
+                errstr = buf;
+            else
+                errstr = "Unknown error";
+        #else
+            char* gnuerr = strerror_r(errno, buf, bufSz);
+            if(gnuerr != nullptr)
+                errstr = gnuerr;
+            else
+                errstr = "Unknown error";
+        #endif
+
+        errno = 0;
+
+        throw LVException(__FILE__, __LINE__, "Model load operation failed (" + errstr + ").");
 		}
 	}
 	catch (LVException &ex) {
@@ -649,19 +688,42 @@ void LVsvm_save_model(lvError *lvErr, const char *path_in, const LVsvm_model *mo
 
 void LVsvm_load_model(lvError *lvErr, const char *path_in, LVsvm_model *model_out){
 	try{
+        errno = 0;
+
 		svm_model *model = svm_load_model(path_in);
 
-		// libsvm returns uninitialized values for the parameters (dick move)
-		(model->param) = { 0 };
-
 		if (model == nullptr){
-			// Allocate room for output error message (truncated if buffer is too small)
-			char buf[64];
-			strerror_s(buf, 64, errno);
-			errno = 0;
-			throw LVException(__FILE__, __LINE__, "Model load operation failed (" + std::string(buf) + ").");
+            // Allocate room for output error message (truncated if buffer is too small)
+            const size_t bufSz = 256;
+            char buf[bufSz] = "";
+            std::string errstr;
+
+		#if defined(_WIN32) || defined(_WIN64)
+			if(strerror_s(buf, bufSz, errno) != 0)
+                errstr = buf;
+            else
+                errstr = "Unknown error";
+        #elif (_POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600) && ! _GNU_SOURCE
+            if(strerror_r(errno, buf, bufSz) != 0)
+                errstr = buf;
+            else
+                errstr = "Unknown error";
+        #else
+            char* gnuerr = strerror_r(errno, buf, bufSz);
+            if(gnuerr != nullptr)
+                errstr = gnuerr;
+            else
+                errstr = "Unknown error";
+        #endif
+
+        errno = 0;
+
+        throw LVException(__FILE__, __LINE__, "Model load operation failed (" + errstr + ").");
 		}
 		else{
+            // libsvm returns uninitialized values for the parameters
+            (model->param) = { 0 };
+
 			LVConvertModel(*model, *model_out);
 			svm_free_model_content(model);
 		}

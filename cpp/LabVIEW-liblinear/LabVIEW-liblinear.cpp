@@ -1,16 +1,19 @@
-#include "LVLibLinear.h"
+#include "LabVIEW-liblinear.h"
 
 #include <stdint.h>
 #include <exception>
 #include <string>
+#include <cstring>
 #include <memory>
-#include <extcode.h>
+#include <cmath>
+#include <climits>
 
+#include <extcode.h>
 #include <linear.h>
 
-#include "LVTypeDecl.h"
-#include "LVUtility.h"
-#include "LVException.h"
+#include <LVTypeDecl.h>
+#include <LVUtility.h>
+#include <LVException.h>
 
 void LVlinear_train(lvError *lvErr, const LVlinear_problem *prob_in, const LVlinear_parameter *param_in, LVlinear_model * model_out){
 	try{
@@ -22,9 +25,14 @@ void LVlinear_train(lvError *lvErr, const LVlinear_problem *prob_in, const LVlin
 		if ((*(prob_in->x))->dimSize != (*(prob_in->y))->dimSize)
 			throw LVException(__FILE__, __LINE__, "The problem must have an equal number of labels and feature vectors (x and y).");
 
+		uint32_t nr_nodes = (*(prob_in->y))->dimSize;
+
+		// Input validation: Number of feature vectors too large (exceeds max signed int)
+		if(nr_nodes > INT_MAX)
+			throw LVException(__FILE__, __LINE__, "Number of feature vectors too large (grater than " + std::to_string(INT_MAX) + ")");
+
 		//-- Convert problem
 		auto prob = std::make_unique<problem>();
-		uint32_t nr_nodes = (*(prob_in->y))->dimSize;
 		prob->l = nr_nodes;
 		prob->y = (*(prob_in->y))->elt;
 		prob->n = 0; // Calculated later
@@ -39,6 +47,10 @@ void LVlinear_train(lvError *lvErr, const LVlinear_problem *prob_in, const LVlin
 			// Assign the innermost svm_node array pointers to the array of pointers
 			auto xi_in_Hdl = (*x_in)->elt[i];
 			x[i] = reinterpret_cast<feature_node*>((*xi_in_Hdl)->elt);
+
+			// Input validation: Final index -1?
+			if ((*xi_in_Hdl)->elt[(*xi_in_Hdl)->dimSize - 1].index != -1)
+				throw LVException(__FILE__, __LINE__, "The index of the last element of each feature vector needs to be -1 (liblinear_train).");
 
 			// Calculate the max index
 			// This detail is not exposed in LabVIEW, as setting the wrong value causes a crash
@@ -96,11 +108,15 @@ void LVlinear_cross_validation(lvError *lvErr, const LVlinear_problem *prob_in, 
 		if ((*(prob_in->x))->dimSize != (*(prob_in->y))->dimSize)
 			throw LVException(__FILE__, __LINE__, "The problem must have an equal number of labels and feature vectors (x and y).");
 
+		uint32_t nr_nodes = (*(prob_in->y))->dimSize;
+		// Input validation: Number of feature vectors too large (exceeds max signed int)
+		if(nr_nodes > INT_MAX)
+			throw LVException(__FILE__, __LINE__, "Number of feature vectors too large (grater than " + std::to_string(INT_MAX) + ")");
+
 		// Convert LVsvm_problem to svm_problem
 		auto prob = std::make_unique<problem>();
-		uint32_t nr_nodes = (*(prob_in->y))->dimSize;
 		prob->l = nr_nodes;
-		prob->y = (*(prob_in->y))->elt;
+		prob->y = (*(prob_in->y))->elt; 
 		prob->n = 0; // Calculated later
 		prob->bias = prob_in->bias;
 
@@ -113,6 +129,10 @@ void LVlinear_cross_validation(lvError *lvErr, const LVlinear_problem *prob_in, 
 			// Assign the innermost svm_node array pointers to the array of pointers
 			auto xi_in_Hdl = (*x_in)->elt[i];
 			x[i] = reinterpret_cast<feature_node*>((*xi_in_Hdl)->elt);
+
+			// Input validation: Final index -1?
+			if ((*xi_in_Hdl)->elt[(*xi_in_Hdl)->dimSize - 1].index != -1)
+				throw LVException(__FILE__, __LINE__, "The index of the last element of each feature vector needs to be -1 (libsvm_crossvalidation).");
 
 			// Calculate the max index
 			// This detail is not exposed in LabVIEW, as setting the wrong value causes a crash
