@@ -59,7 +59,7 @@ svm.o: $(LIBSVM_ROOT)/svm.h $(LIBSVM_ROOT)/svm.cpp
 
 # libsvm dense
 LabVIEW-libsvm-dense: LabVIEW-libsvm-dense.o svm-dense.o $(COMMON_OBJS)
-	$(CXX) $(LDFLAGS) $(LDLIBS) LabVIEW-libsvm-dense.o svm-dense.o $(COMMON_OBJS) -o LabVIEW-libsvm-dense.so 
+	$(CXX) $(LDFLAGS) $(LDLIBS) LabVIEW-libsvm-dense.o svm-dense.o $(COMMON_OBJS) -o $(OUT_PATH)/LabVIEW-libsvm-dense.so 
 
 LabVIEW-libsvm-dense.o: LabVIEW-libsvm-dense/LabVIEW-libsvm-dense.cpp LabVIEW-libsvm-dense/LabVIEW-libsvm-dense.h
 	$(CXX) -I$(LIBSVM_DENSE_ROOT) $(CPPFLAGS) LabVIEW-libsvm-dense/LabVIEW-libsvm-dense.cpp
@@ -69,7 +69,7 @@ svm-dense.o: $(LIBSVM_DENSE_ROOT)/svm.h $(LIBSVM_DENSE_ROOT)/svm.cpp
 
 # liblinear
 LabVIEW-liblinear: LabVIEW-liblinear.o linear.o tron.o blas.a $(COMMON_OBJS)
-	$(CXX) $(LDFLAGS) $(LDLIBS) LabVIEW-liblinear.o linear.o tron.o $(COMMON_OBJS) $(LIBLINEAR_ROOT)/blas/blas.a -o LabVIEW-liblinear.so
+	$(CXX) $(LDFLAGS) $(LDLIBS) LabVIEW-liblinear.o linear.o tron.o $(COMMON_OBJS) $(LIBLINEAR_ROOT)/blas/blas.a -o $(OUT_PATH)/LabVIEW-liblinear.so
 
 LabVIEW-liblinear.o: LabVIEW-liblinear/LabVIEW-liblinear.cpp LabVIEW-liblinear/LabVIEW-liblinear.h
 	$(CXX) $(CPPFLAGS) -I$(LIBLINEAR_ROOT) LabVIEW-liblinear/LabVIEW-liblinear.cpp
