@@ -373,7 +373,7 @@ void LVlinear_delete_logging_userevent(lvError *lvErr, LVUserEventRef *loggingUs
 //-- File operations
 //
 
-void LVsvm_save_model(lvError *lvErr, const char *path_in, const LVlinear_model *model_in){
+void LVlinear_save_model(lvError *lvErr, const char *path_in, const LVlinear_model *model_in){
 	try{
 		errno = 0;
 
@@ -424,7 +424,7 @@ void LVsvm_save_model(lvError *lvErr, const char *path_in, const LVlinear_model 
 	}
 }
 
-void LVsvm_load_model(lvError *lvErr, const char *path_in, LVlinear_model *model_out){
+void LVlinear_load_model(lvError *lvErr, const char *path_in, LVlinear_model *model_out){
 	try{
 		errno = 0;
 
