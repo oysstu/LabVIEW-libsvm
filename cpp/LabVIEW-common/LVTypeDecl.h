@@ -5,6 +5,11 @@
 
 #pragma once
 
+// LabVIEW 32-bit checks for a deprecated define in platdefines.h under linux
+#if defined(__linux__) && defined(__i386) && !defined(i386)
+	#define i386 1
+#endif
+
 #include <type_traits>
 
 #include "extcode.h"
