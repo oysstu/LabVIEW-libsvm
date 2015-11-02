@@ -1,4 +1,4 @@
-<VI_Package_Builder_Settings Version="0.6" Created_Date="2015-04-03 18:25:14" Modified_Date="2015-09-30 20:47:30" Creator="OS" Comments="" ID="6f7ea005d949e86a4db6350bf95dc774">
+<VI_Package_Builder_Settings Version="0.6" Created_Date="2015-04-03 18:25:14" Modified_Date="2015-11-01 16:32:08" Creator="OS" Comments="" ID="c3c1cad5fdd66b88e8d9792e5e5652b0">
   <Library_General_Settings>
     <Package_File_Name>LVLibSVM</Package_File_Name>
     <Library_Version>0.6.0.2</Library_Version>
@@ -17,7 +17,11 @@
   </Library_General_Settings>
   <Advanced_Settings>
     <Package_Dependencies>
-      <Additional_External_Dependencies>openg.org_lib_openg_toolkit &gt;=4.0.1.9</Additional_External_Dependencies>
+      <Additional_External_Dependencies>oglib_array &gt;=4.1.1.14</Additional_External_Dependencies>
+      <Additional_External_Dependencies>oglib_error &gt;=4.2.0.23</Additional_External_Dependencies>
+      <Additional_External_Dependencies>oglib_file &gt;=4.0.1.22</Additional_External_Dependencies>
+      <Additional_External_Dependencies>oglib_string &gt;=4.1.0.12</Additional_External_Dependencies>
+      <Additional_External_Dependencies>oglib_time &gt;=4.0.1.3</Additional_External_Dependencies>
     </Package_Dependencies>
     <Custom_Action_VIs>
       <Pre-Build_VI/>
@@ -254,7 +258,7 @@
         <Path>..\LabVIEW\LibSVM Sparse</Path>
         <VI_Title/>
       </Items_Data>
-      <GUID>405064B467E5618807BE90E4B852D342</GUID>
+      <GUID>2240AFF658B03C6DC42186873D8B7E0B</GUID>
     </Functions_Palette_Data>
     <Functions_Palette_Data>
       <Parent_Palette_Index>0</Parent_Palette_Index>
@@ -373,7 +377,7 @@
         <Path>..\LabVIEW\Liblinear\Examples</Path>
         <VI_Title/>
       </Items_Data>
-      <GUID>EC245306B011009E8A230B29EB31120E</GUID>
+      <GUID>E7EEF89975C64B2772033D3534D0887D</GUID>
     </Functions_Palette_Data>
     <Functions_Palette_Data>
       <Parent_Palette_Index>0</Parent_Palette_Index>
@@ -464,7 +468,7 @@
         <Path>..\LabVIEW\LibSVM Dense\Examples</Path>
         <VI_Title/>
       </Items_Data>
-      <GUID>26B2AEE5C44176A366F5B33AD31CC646</GUID>
+      <GUID>DA3A01F68271E9AD9DE118F2084E0295</GUID>
     </Functions_Palette_Data>
     <Functions_Palette_Data>
       <Parent_Palette_Index>0</Parent_Palette_Index>
@@ -569,7 +573,7 @@
         <Path>..\LabVIEW\LibSVM Sparse\Examples</Path>
         <VI_Title/>
       </Items_Data>
-      <GUID>37DA23C3956D6C1C15E7E4C5FFA7AB51</GUID>
+      <GUID>42D61D19B221BD7F221F1A6FEAB73F0A</GUID>
     </Functions_Palette_Data>
     <Functions_Palette_Data>
       <Parent_Palette_Index>0</Parent_Palette_Index>
@@ -716,7 +720,7 @@
         <Path>..\LabVIEW\Tools\Gridsearch Visualization.vi</Path>
         <VI_Title/>
       </Items_Data>
-      <GUID>92784A91F76FB932435514378E5945B6</GUID>
+      <GUID>3B8783DB640188B2AF1D98F99585D69D</GUID>
     </Functions_Palette_Data>
     <Functions_Palette_Data>
       <Parent_Palette_Index>3</Parent_Palette_Index>
@@ -793,7 +797,7 @@
         <Path>..\LabVIEW\LibSVM Sparse\Logger\LOG_Initialize.vi</Path>
         <VI_Title/>
       </Items_Data>
-      <GUID>24B4F007DB733703AC773EE8A6711AFF</GUID>
+      <GUID>0F98D7F0FF7B1A28C660176D18D7F5CF</GUID>
     </Functions_Palette_Data>
     <Functions_Palette_Data>
       <Parent_Palette_Index>5</Parent_Palette_Index>
@@ -828,7 +832,7 @@
         <Path>..\LabVIEW\LibSVM Sparse\Logger\SubVIs\LOG_AsyncHandler.vi</Path>
         <VI_Title/>
       </Items_Data>
-      <GUID>E36D9275EE24DA6729F742C557F5E411</GUID>
+      <GUID>29CF9BB8502145D446DF779F5F5F6320</GUID>
     </Functions_Palette_Data>
     <Functions_Palette_Data>
       <Parent_Palette_Index>3</Parent_Palette_Index>
@@ -891,7 +895,7 @@
         <Path>..\LabVIEW\LibSVM Sparse\Examples\SVM_Train_FromFile.vi</Path>
         <VI_Title/>
       </Items_Data>
-      <GUID>D08600888DFCEBC3189B60CB78D0B515</GUID>
+      <GUID>43DE4333D6747B17966CFD2B67B31DD5</GUID>
     </Functions_Palette_Data>
     <Functions_Palette_Data>
       <Parent_Palette_Index>2</Parent_Palette_Index>
@@ -954,7 +958,7 @@
         <Path>..\LabVIEW\LibSVM Dense\Examples\SVMDense_Train_FromFile.vi</Path>
         <VI_Title/>
       </Items_Data>
-      <GUID>FE93123530E750D00F003B8A93FB7492</GUID>
+      <GUID>325B09CF3729359667401A922FF42ED3</GUID>
     </Functions_Palette_Data>
     <Functions_Palette_Data>
       <Parent_Palette_Index>1</Parent_Palette_Index>
@@ -1003,7 +1007,7 @@
         <Path>..\LabVIEW\Liblinear\Examples\liblinear_train_example.vi</Path>
         <VI_Title/>
       </Items_Data>
-      <GUID>FE203833F6F7E578AC1EA079482D599C</GUID>
+      <GUID>E28AA0375B575467A8AD0B58D34921A5</GUID>
     </Functions_Palette_Data>
   </Library_Palette_Definition>
 </VI_Package_Builder_Settings>

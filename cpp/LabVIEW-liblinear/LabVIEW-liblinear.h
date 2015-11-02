@@ -117,9 +117,9 @@ LVLIBLINEAR_API void CALLCONV LVlinear_delete_logging_userevent(lvError *lvErr, 
 //-- File operations
 //
 
-LVLIBLINEAR_API void CALLCONV LVsvm_save_model(lvError *lvErr, const char *path_in, const LVlinear_model *model_in);
+LVLIBLINEAR_API void CALLCONV LVlinear_save_model(lvError *lvErr, const char *path_in, const LVlinear_model *model_in);
 
-LVLIBLINEAR_API void CALLCONV LVsvm_load_model(lvError *lvErr, const char *path_in, LVlinear_model *model_out);
+LVLIBLINEAR_API void CALLCONV LVlinear_load_model(lvError *lvErr, const char *path_in, LVlinear_model *model_out);
 
 //-- Helper functions
 

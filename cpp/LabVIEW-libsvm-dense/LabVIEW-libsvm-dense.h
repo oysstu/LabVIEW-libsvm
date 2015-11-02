@@ -105,19 +105,26 @@ LVLIBSVM_API double		CALLCONV LVsvm_predict_values(lvError *lvErr, const LVsvm_m
 
 LVLIBSVM_API double		CALLCONV LVsvm_predict_probability(lvError *lvErr, const LVsvm_model *model_in, const LVArray_Hdl<double> x_in, LVArray_Hdl<double> prob_estimates_out);
 
+//
 //-- File operations
-// File saving/loading should be done through LabVIEW API, these are included for interoperability
+//
 LVLIBSVM_API void		CALLCONV LVsvm_save_model(lvError *lvErr, const char *path_in, const LVsvm_model *model_in);
+
 LVLIBSVM_API void		CALLCONV LVsvm_load_model(lvError *lvErr, const char *path_in, LVsvm_model *model_out);
 
+//
 //-- Print function (used for console output redirection to LabVIEW)
+//
+
 // Logging is global for now
 void LVsvm_print_function(const char * message);
 LVLIBSVM_API void CALLCONV LVsvm_set_logging_userevent(lvError *lvErr, LVUserEventRef *loggingUserEvent_in);
 LVLIBSVM_API void CALLCONV LVsvm_get_logging_userevent(lvError *lvErr, LVUserEventRef *loggingUserEvent_out);
 LVLIBSVM_API void CALLCONV LVsvm_delete_logging_userevent(lvError *lvErr, LVUserEventRef *loggingUserEvent_out);
 
+//
 //-- Helper functions
+//
 
 // Assigns the cluster from LabVIEW to a svm_parameter struct
 void LVConvertParameter(const LVsvm_parameter &param_in, svm_parameter &param_out);
