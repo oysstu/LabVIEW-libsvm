@@ -16,6 +16,12 @@
 #include <LVUtility.h>
 #include <LVException.h>
 
+// C++14 feature: std::make_unique
+// GNU g++-4.9 or later with -std=c++14 enabled is needed on unix (VS2013 has native support)
+#if defined(__GNUG__) && (!defined(__cpp_lib_make_unique) || (__cplusplus < __cpp_lib_make_unique))
+	#include <make_unique.hpp>
+#endif
+
 void LVlinear_train(lvError *lvErr, const LVlinear_problem *prob_in, const LVlinear_parameter *param_in, LVlinear_model * model_out){
 	try{
 		// Input verification: Nonempty problem

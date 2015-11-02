@@ -44,7 +44,7 @@ CFLAGS := $(BITNESS_FLAG) -Wall -Wconversion -O3 -fPIC
 CPPFLAGS := \
 	-I$(LV_ROOT)/cintools \
 	-I./LabVIEW-common \
-	$(BITNESS_FLAG) -c -Wall -fPIC -O3 -pedantic -shared -std=c++14 -Wno-unknown-pragmas
+	$(BITNESS_FLAG) -c -Wall -fPIC -O3 -pedantic -shared -std=c++11 -Wno-unknown-pragmas
 
 ## Linker  ##
 LDPATHS := -L$(LV_ROOT)/cintools
