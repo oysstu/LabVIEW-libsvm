@@ -4,7 +4,7 @@
 A LabVIEW wrapper for libsvm (3.20) and liblinear (2.10).
 The implementation is thread-safe, which means that multiple cross-validation/training/predicting can be executed simultaneously.
 
-Interfaces to both libsvm sparse and dense is included. The recommendation is to use the dense variant unless you know you need sparseness. This is both due to better performance and a more practical data format as the indices are implicit. Both sparse and dense perform similarly for small number of features. Note however, that performance for the sparse 32-bit library suffers because the LabVIEW structures are not directly memory compatible with the C++ library, which introduces unnecessary copies. The recommendation is therefore to use a 64-bit LabVIEW installation if the sparse library is needed.
+Interfaces to both libsvm sparse and dense is included. The recommendation is to use the dense variant unless you know you need sparseness. This is both due to better performance and a more practical data format as the indices are implicit. Both sparse and dense perform similarly for small number of features. Note however, that performance for the sparse 32-bit library suffers on Windows because the LabVIEW structures are not directly memory compatible with the C++ library, which introduces unnecessary copies. The recommendation is therefore to use a 64-bit LabVIEW installation if the sparse library is needed on Windows.
 
 Sparse is only necessary for datasets consisting of an extremely large number of features, where many features are zeros.
 
@@ -16,7 +16,8 @@ The library is developed in LabVIEW 2015, but the distributed VIPM packages are 
 ### Dependencies
 * libsvm and liblinear binaries (included in the VIPM package or through the zip files)
 * OpenG Toolkit VIs (automatically installed by VIPM)
-* [Visual Studio 2013 Visual C++ Redistributable](http://www.microsoft.com/en-us/download/details.aspx?id=40784) (x86 for 32bit LabVIEW, x64 for 64bit LabVIEW)
+* Windows: [Visual Studio 2013 Visual C++ Redistributable](http://www.microsoft.com/en-us/download/details.aspx?id=40784) (x86 for 32bit LabVIEW, x64 for 64bit LabVIEW)
+* Linux: Compiled with GCC/G++-4.8.3 on CentOS7 (libc and libstdc++ must have an compatible ABI)
 
 ### Usage
 Currently there are three examples included in the palette. Look at the official libsvm/liblinear documentation if something should be unclear. 
