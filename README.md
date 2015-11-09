@@ -11,7 +11,7 @@ Sparse is only necessary for datasets consisting of an extremely large number of
 ### Installation
 **The easiest way to install the library is through the pre-built VIPM package found under releases.** This installs both the VIs and binary components to user.lib and adds an entry in the LabVIEW palette. Alternatively, one can download the project itself and the binaries under releases corresponding to the target bitness.
 
-The library is developed in LabVIEW 2015, but the distributed VIPM packages are compatible with LabVIEW 2013.
+The library is developed in LabVIEW 2015, but the distributed VIPM packages are compatible with LabVIEW 2013. On Linux you need to run VIPM as root, and ensure that the target LabVIEW installation allows for TCP/IP connections (Options - Protocols - TCP/IP).
 
 ### Dependencies
 * libsvm and liblinear binaries (included in the VIPM package or through the zip files)
@@ -20,7 +20,7 @@ The library is developed in LabVIEW 2015, but the distributed VIPM packages are 
 * Linux: Compiled with GCC/G++-4.8.3 on CentOS7 (libc and libstdc++ must have an compatible ABI)
 
 ### Usage
-Currently there are three examples included in the palette. Look at the official libsvm/liblinear documentation if something should be unclear. 
+Each sublibrary contains some basic examples. Look at the official libsvm/liblinear documentation if something should be unclear. 
 The documentation for the python wrapper in scikit-learn is also very useful.
 
 The library primarily consists of VIs that more or less wrap the functions exposed through the libsvm/liblinear API.
