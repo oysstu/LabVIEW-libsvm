@@ -13,7 +13,7 @@ To avoid changing the include paths, you can unpack these at C:\dev\ or ~\dev\.
 * Grab the .bat files under dependencies in this project, and copy each pair to the root folder of libsvm/liblinear/libsvm-dense.
 * Run the bat file corresponding to the bitness you're building for. This will build a static library, which we will link against from visual studio. Note that you should not execute both bat files from the same command prompt.
 * The dependency paths are declared in property sheets in the project. The LabVIEW path can be set in CommonPaths.props under LabVIEW-common, which defaults to the LabVIEW 2015 standard directory. The path to libsvm/liblinear/libsvm-dense are declared in Paths.props in their respective folders.
-* The library should now build and output the DLLs to <Project Root>\LabVIEW\bin\.
+* The library should now build and output the DLLs to (Project Root)\LabVIEW\bin\.
 
 ## Linux
 * Ensure that gcc/g++ 3.8 or later is used, this should be satisfied by the default compiler in most recent distributions. Additionally, you need the development headers/libraries for your distribution, and the cross-build (multilib) libraries if you are cross-compiling.
