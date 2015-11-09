@@ -1,4 +1,4 @@
-<VI_Package_Builder_Settings Version="0.6" Created_Date="2015-04-03 18:25:14" Modified_Date="2015-11-01 16:32:08" Creator="OS" Comments="" ID="c3c1cad5fdd66b88e8d9792e5e5652b0">
+<VI_Package_Builder_Settings Version="0.6" Created_Date="2015-04-03 18:25:14" Modified_Date="2015-11-02 22:47:23" Creator="OS" Comments="" ID="30b2790f39a6621811e44d889fda9d6c">
   <Library_General_Settings>
     <Package_File_Name>LVLibSVM</Package_File_Name>
     <Library_Version>0.6.0.2</Library_Version>
@@ -160,7 +160,7 @@
       <Windows_Vista>true</Windows_Vista>
       <Windows_XP>true</Windows_XP>
       <Mac_OS>false</Mac_OS>
-      <Linux>false</Linux>
+      <Linux>true</Linux>
       <Built_LV_Version>false</Built_LV_Version>
       <Built_LV_Version_or_greater>true</Built_LV_Version_or_greater>
       <Windows_8>true</Windows_8>
@@ -258,7 +258,7 @@
         <Path>..\LabVIEW\LibSVM Sparse</Path>
         <VI_Title/>
       </Items_Data>
-      <GUID>2240AFF658B03C6DC42186873D8B7E0B</GUID>
+      <GUID>A17DB573893A8149E6996AFC70C7241D</GUID>
     </Functions_Palette_Data>
     <Functions_Palette_Data>
       <Parent_Palette_Index>0</Parent_Palette_Index>
@@ -377,7 +377,7 @@
         <Path>..\LabVIEW\Liblinear\Examples</Path>
         <VI_Title/>
       </Items_Data>
-      <GUID>E7EEF89975C64B2772033D3534D0887D</GUID>
+      <GUID>5772F1A5E10CD3BAC6716666873EB081</GUID>
     </Functions_Palette_Data>
     <Functions_Palette_Data>
       <Parent_Palette_Index>0</Parent_Palette_Index>
@@ -468,7 +468,7 @@
         <Path>..\LabVIEW\LibSVM Dense\Examples</Path>
         <VI_Title/>
       </Items_Data>
-      <GUID>DA3A01F68271E9AD9DE118F2084E0295</GUID>
+      <GUID>456FE08372924880C69F3FB72DACFE8D</GUID>
     </Functions_Palette_Data>
     <Functions_Palette_Data>
       <Parent_Palette_Index>0</Parent_Palette_Index>
@@ -573,7 +573,7 @@
         <Path>..\LabVIEW\LibSVM Sparse\Examples</Path>
         <VI_Title/>
       </Items_Data>
-      <GUID>42D61D19B221BD7F221F1A6FEAB73F0A</GUID>
+      <GUID>CAA3997D45BD49E4B8D9E69772D1DBC1</GUID>
     </Functions_Palette_Data>
     <Functions_Palette_Data>
       <Parent_Palette_Index>0</Parent_Palette_Index>
@@ -720,7 +720,7 @@
         <Path>..\LabVIEW\Tools\Gridsearch Visualization.vi</Path>
         <VI_Title/>
       </Items_Data>
-      <GUID>3B8783DB640188B2AF1D98F99585D69D</GUID>
+      <GUID>6D2DCD2BEB9C3A58002EB948F347CB71</GUID>
     </Functions_Palette_Data>
     <Functions_Palette_Data>
       <Parent_Palette_Index>3</Parent_Palette_Index>
@@ -797,7 +797,7 @@
         <Path>..\LabVIEW\LibSVM Sparse\Logger\LOG_Initialize.vi</Path>
         <VI_Title/>
       </Items_Data>
-      <GUID>0F98D7F0FF7B1A28C660176D18D7F5CF</GUID>
+      <GUID>12E9902C93134C672D846948324CC168</GUID>
     </Functions_Palette_Data>
     <Functions_Palette_Data>
       <Parent_Palette_Index>5</Parent_Palette_Index>
@@ -832,7 +832,7 @@
         <Path>..\LabVIEW\LibSVM Sparse\Logger\SubVIs\LOG_AsyncHandler.vi</Path>
         <VI_Title/>
       </Items_Data>
-      <GUID>29CF9BB8502145D446DF779F5F5F6320</GUID>
+      <GUID>784248715A1833E8D93528127EDAFEA1</GUID>
     </Functions_Palette_Data>
     <Functions_Palette_Data>
       <Parent_Palette_Index>3</Parent_Palette_Index>
@@ -895,7 +895,7 @@
         <Path>..\LabVIEW\LibSVM Sparse\Examples\SVM_Train_FromFile.vi</Path>
         <VI_Title/>
       </Items_Data>
-      <GUID>43DE4333D6747B17966CFD2B67B31DD5</GUID>
+      <GUID>80573938B92534982CF6DBA00C906E4D</GUID>
     </Functions_Palette_Data>
     <Functions_Palette_Data>
       <Parent_Palette_Index>2</Parent_Palette_Index>
@@ -958,7 +958,7 @@
         <Path>..\LabVIEW\LibSVM Dense\Examples\SVMDense_Train_FromFile.vi</Path>
         <VI_Title/>
       </Items_Data>
-      <GUID>325B09CF3729359667401A922FF42ED3</GUID>
+      <GUID>8CD57F14D4FDA174AA0AD85F28734CD8</GUID>
     </Functions_Palette_Data>
     <Functions_Palette_Data>
       <Parent_Palette_Index>1</Parent_Palette_Index>
@@ -1007,7 +1007,7 @@
         <Path>..\LabVIEW\Liblinear\Examples\liblinear_train_example.vi</Path>
         <VI_Title/>
       </Items_Data>
-      <GUID>E28AA0375B575467A8AD0B58D34921A5</GUID>
+      <GUID>1965DA1E1EA20E0F170D4E7FCCC0E9FF</GUID>
     </Functions_Palette_Data>
   </Library_Palette_Definition>
 </VI_Package_Builder_Settings>
