@@ -1,4 +1,4 @@
-# Makefile for libsvm/liblinear LabVIEW wrapper
+# Makefile for libsvm/liblinear LabVIEW wrapper on GNU/Linux
 # The makefile is a bit verbose to ensure that compilation of dense and sparse is separated properly
 CC ?= gcc
 CXX ?= g++
