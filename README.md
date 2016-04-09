@@ -17,7 +17,7 @@ The library is developed in LabVIEW 2015, but the distributed VIPM packages are 
 * libsvm and liblinear binaries (included in the VIPM package or through the zip files)
 * OpenG Toolkit VIs (automatically installed by VIPM)
 * Windows: [Visual Studio 2013 Visual C++ Redistributable](http://www.microsoft.com/en-us/download/details.aspx?id=40784) (x86 for 32bit LabVIEW, x64 for 64bit LabVIEW)
-* Linux: Compiled with GCC/G++-4.8.3 on CentOS7 (libc and libstdc++ must have an compatible ABI)
+* Linux: Compiled with GCC/G++-4.8.5 on CentOS7 (libc and libstdc++ must have an compatible ABI)
 
 ### Usage
 Each sublibrary contains some basic examples. Look at the official libsvm/liblinear documentation if something should be unclear. 
