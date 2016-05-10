@@ -9,7 +9,7 @@ Interfaces to both libsvm sparse and dense is included. The recommendation is to
 Sparse is only necessary for datasets consisting of an extremely large number of features, where many features are zeros.
 
 ### Installation
-1. Download .vipm file on the [release page](https://github.com/oysstu/LabVIEW-libsvm/releases)
+1. Download the newest .vip file on the [release page](https://github.com/oysstu/LabVIEW-libsvm/releases)
 2. Open and install the file with VI package manager (VIPM)
 
 This includes all necessary binaries and OpenG dependencies (note: internet access required for automatic download of OpenG). The binaries themselves is also supplied in a separate achive, for those that prefer to use the library without installing.
