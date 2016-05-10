@@ -9,7 +9,10 @@ Interfaces to both libsvm sparse and dense is included. The recommendation is to
 Sparse is only necessary for datasets consisting of an extremely large number of features, where many features are zeros.
 
 ### Installation
-**The easiest way to install the library is through the pre-built VIPM package found under releases.** This installs both the VIs and binary components to user.lib and adds an entry in the LabVIEW palette. Alternatively, one can download the project itself and the binaries under releases corresponding to the target bitness.
+1. Download .vipm file on the [release page](https://github.com/oysstu/LabVIEW-libsvm/releases)
+2. Open and install the file with VI package manager (VIPM)
+
+This includes all necessary binaries and OpenG dependencies (note: internet access required for automatic download of OpenG). The binaries themselves is also supplied in a separate achive, for those that prefer to use the library without installing.
 
 The library is developed in LabVIEW 2015, but the distributed VIPM packages are compatible with LabVIEW 2013. On Linux you need to run VIPM as root, and ensure that the target LabVIEW installation allows for TCP/IP connections (Options - Protocols - TCP/IP).
 
