@@ -12,7 +12,7 @@ Sparse is only necessary for datasets consisting of an extremely large number of
 1. Download the newest .vip file on the [release page](https://github.com/oysstu/LabVIEW-libsvm/releases)
 2. Open and install the file with VI package manager (VIPM)
 
-This includes all necessary binaries and OpenG dependencies (note: internet access required for automatic download of OpenG). The binaries themselves is also supplied in a separate achive, for those that prefer to use the library without installing.
+This includes all necessary binaries and OpenG dependencies (note: internet access required for automatic download of OpenG). The binaries themselves is also supplied in a separate zip archive, for those that prefer to use the library without installing.
 
 The library is developed in LabVIEW 2015, but the distributed VIPM packages are compatible with LabVIEW 2013. On Linux you need to run VIPM as root, and ensure that the target LabVIEW installation allows for TCP/IP connections (Options - Protocols - TCP/IP).
 
