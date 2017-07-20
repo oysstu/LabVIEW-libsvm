@@ -20,7 +20,7 @@ The library is compatible with LabVIEW 2015 SP1 (64/32bit) and later. On Linux y
 * libsvm and liblinear binaries (included in the VIPM package or through the zip files)
 * OpenG Toolkit VIs (automatically installed by VIPM)
 * Windows: [Microsoft Visual C++ 2017 Redistributable](https://www.visualstudio.com/downloads/) (x86 for 32bit LabVIEW, x64 for 64bit LabVIEW)
-* Linux: Distributed binaries compiled with GCC/G++-5.4 on Ubuntu 16.04 LTS, compatible ABI required on target system
+* Linux: Distributed binaries compiled with GCC/G++-5.4 on Ubuntu 16.04 LTS 64-bit, compatible ABI required on target system (only 64bit binaries is distributed)
 
 ### Usage
 Each sub-library contains some basic examples. Look at the official libsvm/liblinear documentation if something should be unclear. 
