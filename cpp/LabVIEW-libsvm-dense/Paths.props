@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <LIBSVM_DENSE_PATH>C:\dev\libsvm-dense-3.20</LIBSVM_DENSE_PATH>
+    <LIBSVM_DENSE_PATH>C:\dev\dep\libsvm-dense-3.22</LIBSVM_DENSE_PATH>
     <TARGET_DIR>$(SolutionDir)\..\LabVIEW\bin\</TARGET_DIR>
   </PropertyGroup>
   <PropertyGroup />

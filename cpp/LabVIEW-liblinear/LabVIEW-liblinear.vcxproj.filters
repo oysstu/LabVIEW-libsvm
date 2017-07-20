@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="LVLibLinear.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\LabVIEW-common\LVException.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -27,15 +24,18 @@
     <ClInclude Include="..\LabVIEW-common\LVUtility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="LabVIEW-liblinear.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="LVLibLinear.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\LabVIEW-common\LVException.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\LabVIEW-common\LVUtility.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LabVIEW-liblinear.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

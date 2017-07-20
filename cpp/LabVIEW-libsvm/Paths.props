@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <LIBSVM_PATH>C:\dev\libsvm-320</LIBSVM_PATH>
+    <LIBSVM_PATH>C:\dev\dep\libsvm-322</LIBSVM_PATH>
     <TARGET_DIR>$(SolutionDir)\..\LabVIEW\bin\</TARGET_DIR>
   </PropertyGroup>
   <PropertyGroup />

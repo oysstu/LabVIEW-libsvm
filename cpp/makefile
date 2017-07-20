@@ -10,9 +10,9 @@ OUT_PATH ?= ../LabVIEW/bin
 OBJ_PATH ?= ./obj
 LV64_ROOT ?= /usr/local/natinst/LabVIEW-2015-64
 LV32_ROOT ?= /usr/local/natinst/LabVIEW-2015
-LIBSVM_ROOT ?= $(HOME)/dev/libsvm-320
-LIBSVM_DENSE_ROOT ?= $(HOME)/dev/libsvm-dense-3.20
-LIBLINEAR_ROOT ?= $(HOME)/dev/liblinear-210
+LIBSVM_ROOT ?= $(HOME)/dev/libsvm-322
+LIBSVM_DENSE_ROOT ?= $(HOME)/dev/libsvm-dense-3.22
+LIBLINEAR_ROOT ?= $(HOME)/dev/liblinear-211
 
 ifeq ($(BITNESS),64)
 BITNESS_FLAG = -m64

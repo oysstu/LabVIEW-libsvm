@@ -1,4 +1,4 @@
-CALL "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\vcvars32.bat"
+CALL "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars32.bat"
 SET TARGET="windows_x86"
 
 del /s /q /f *.obj
